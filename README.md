@@ -2,74 +2,79 @@
 
 ## Automagic persistence for your object's state
 
-BoCode.RedoDB, short RedoDB, is a library adding the ability to persist your object state with almost no extra coding.
+__BoCode.RedoDB__, short __RedoDB__, is a library adding the ability to persist your object state with almost no extra coding.
 
 In this documentation, the term *System* will be used for the object being persisted by RedoDB. Alternatively, we will call it also *redoable object*. 
 
 Instead of constructing the system directly using the constructor of the system's entry class, you let construct the object instance using the RedoDBEngineBuilder. Example:
 
 ```c#
-RedoDBEngineBuilder<Contacts, IContacts> builder = new();
+RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new();
 builder.WithDataPath("c:\data");
 IContacts contacts = builder.Build();
 ```
 
-Es you see in the code above, your system must implement an interface defining all the members needed to manipulate the system's state. 
+Your system must implement an interface defining all members changing the system's state. 
 
-*Contacts* implements methods like *AddContact*, *GetAll* and *Count*. 
-
-The system, in order to be persistable must be serializable. Basically this is all you need to make your system "redoable" - as we like to say.
+The system, to be persistable, must be serializable. It is all you need to make your system "redoable" - as we like to say.
 
 ## How does it work? The Commandlog
 
-The RedoDBEngineBuilder constructs a proxy object with the system's interface. Every call to methods or properties of the system can then be intercepted by the RedoDBEngine instance associated to your system instance.
+We use the event sourcing pattern.
 
-When a method is intercepted, the RedoDBEngine writes a log-entry for the command executed in the command log. A command represents the method call and saves the parameters. 
+The __RedoDBEngineBuilder__ constructs a proxy object using system's interface. Every call to methods or properties of the system can then be intercepted by the __RedoDBEngine__ instance associated to your system instance.
+
+When a method is intercepted, the __RedoDBEngine__ writes an entry for the command executed in the command log. A command represents the method call and saves the parameters, among other execution context information. 
 
 >NOTE: All arguments of a method invocation must be serializable too.
 
-Basically, this would be all we need to reconstruct the state of your redoable object the next time you build the system using the RedoDBEngineBuilder. The builder would redo the commands against the constructing instance, and voilà, you have your state back online.
+This would be all we need to reconstruct the state of your redoable object using the __RedoDBEngineBuilder__. The builder would redo the commands against the constructing instance, and voilà, you have your state back online.
 
-Basically, we use event sourcing to save state changes. 
+## Optimization: take snapshots
+Saving a lot of commands would generate a very long command log. To maintain recovering time stable __RedoDBEngine__ has a method called __TakeSnapshot__. This method cuts the command log and saves an image of the object graph kept by your system's instance. 
 
-## Optimization: TakeSnapshots
-Saving a lot of commands would generate a very long command log. To maintain recovering time stable **RedoDBEngine** has a method called __TakeSnapshot__. This method cuts the command log and saves an image of the object graph kept by your system's instance. 
+The next time your system will be recovered **RedoDBEngineBuilder** will use the latest snapshot and redo commands tracked after the last snapshot.
 
-The next time your system will be recovered **RedoDBEngineBuilder** will use the latest snapshot and redo commands tracked after the call of the last TakeSnapshot.
-
-## Commandlog and Snapshot are Json files
+## Commandlogs and Snapshots are Json files
 
 If you do not inject a command adapter or a snapshot adapter while building the RedoDBEngine, the default adapters are used. They are implemented to save command logs and snapshots as Json-files.
 
->NOTE the command log is a file containing a json per command. Itself is not a Json-file, because the root element is left out.
+>NOTE the command log is a file containing a Json per command. Itself is not a Json-file, because the root element is left out.
 
-RedoDB can easily be extended, and you can implement your adapters.
+## You can extend RedoDB
+RedoDB can easily be extended, and you can implement your own adapters by implementing the __ICommandAdapter__ and __ISnapshotAdapters__ interface. 
+
+>ATTENTION: Do not mix implementations of command adapters and snapshot adapters, as they come in couples because they need to "talk" to each other to coordinate, for example, file names. So, if you decide to implement your own commandlog adapter, implement a snapshot adapter too.
 
 ## Compensation
-If a command starts execution and changes the state of your system, but before it ends an exception is thrown, then the state of your system would be invalid.
+
+_"Compensating activities have to generate a state of the accessed data object which is identical to the state at the point in time the original activity started, i.e., object in the database(s) must have the same value."_ (from Advanced Transaction Models and Architectures, Springer Science+Business Media, LLC)
+
+If a command starts execution and changes the state of your system, but before it ends, an exception is thrown, then the state of your system would be invalid.
 
 RedoDB can compensate automatically. The system's state is rolled back to the one before the faulty command's execution.
 
-You should think about compensation in your system's code. If you don't own the code, you can activate compensation. This way, you can be 100% sure of avoiding invalid states.
+If you don't own the code, and you are not sure if the system you are using compensate internally in case of exceptions, then you can activate RedoDB compensation. This way, you can be 100% sure of avoiding invalid states.
 
 The activation of compensation looks as follows:
 
 ```c#
-RedoDBEngineBuilder<Contacts, IContacts> builder = new()
+RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
     .WithDataPath("c:\data")
     .WithCompensation;
 IContacts contacts = builder.Build();
 ```
+>NOTE: during compensation  writers are queued, so response time could slow down. For this reason is preferable that you ensure a valid state in the internal design of your system. This way you can avoid to activate compensation and you can control performance.
 
 ## Configure **Interception** using the builder
 
-You can instruct the builder on what to intercept or mark methods as 'redoable' using the method attribute. This way you can reduce how many commands are tracked and improve recovering time.
+You can instruct the builder on what to intercept or mark methods as 'redoable' using the method attribute. This way, you can reduce how many commands are tracked and improve recovering time.
 
-> NOTE: you must intercept all methods changing the state of your system. You should configure away only members you are sure they don't change the state of the system. Methods beginning with 'Get' are likely to be read-only methods.
+> NOTE: you must intercept all methods changing the state of your system. You should configure away only members you are sure are not changing the state of the system. Methods beginning with 'Get' are likely to be read-only methods.
 
 Example
 ```c#
-RedoDBEngineBuilder<Contacts, IContacts> builder = new()
+RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
     .WithDataPath("c:\data")
     .ExcludeMethodsStartingWith("Get");
 IContacts contacts = builder.Build();
@@ -80,15 +85,15 @@ Another method to control interception is the 'AddInterception' method.
 
 Example
 ```c#
-RedoDBEngineBuilder<Contacts, IContacts> builder = new()
+RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
     .WithDataPath("c:\data")
     .AddInterception("AddContact");
 IContacts contacts = builder.Build();
 ```
 
-Using this method implies that you want to control interception by adding all the methods you want to intercept manually. Our system would not intercept 'GetAll' or 'Count' anymore.
+Using this method implies that you want to control Interception by adding all the methods you want to intercept manually. Our system would not intercept 'GetAll' or 'Count' anymore.
 
-## Configure interception using the __Redoable__ attribute
+## Configure Interception using the __Redoable__ attribute
 
 Example:
 
@@ -99,11 +104,11 @@ Example:
         void AddAccount(Account account);
 ```
 
-Other methods without the attribute are now excluded from interception. 
+Other methods without the attribute are now excluded from Interception. 
 
 ## More than one redoable system in your project?
 
-Let imagine that your project your are dealing with several redoable systems. You can't use the same DataPath (the directory for command logs and snapshots) for all systems. The first solution would be to configure different DataPaths for each system. An alternative is the RedoSubdirectoryAttribute. This class level Attribute has a parameter called 'Subdirectory' and lets you specify the name of a subdirectory of DataPath. 
+Let imagine that your project your are dealing with several redoable systems. You can't use the same DataPath (the directory for command logs and snapshots) for all systems. The first solution would be to configure different DataPaths for each system. An alternative is the RedoSubdirectoryAttribute. This class level Attribute has a parameter called 'Subdirectory'. It lets you specify the name of a subdirectory of DataPath (root path of your persistence files). 
 
 Example:
 ```c#
@@ -118,10 +123,24 @@ Example:
     }
 ```
 
-The advantage of this approach is that a single configuration setting (for DataPath) is enough. If you move to another directory the DataPath, all systems will automatically follow.
+The advantage of this approach is that a single configuration setting (for DataPath) is enough. If you move the DataPath to another directory, all systems will automatically follow.
 
-## Final notes
-Be aware of this scalability issue: The RedoDBEngine locks to only one writer, while you can have many simultaneous readers. If different clients try to write simultaneously, the calls are queued. 
+## Please note further
+Be aware of this scalability issue: __RedoDBEngine__ locks to only one writer, while you can have many simultaneous readers. If different clients try to write simultaneously, the calls are queued. 
+
+I have already used the strategy implemented by RedoDB in productive software with success. The biggest snapshots handled in my projects were 6GB big. __RedoDB is not yet tested in such scenarios.__
+
+RedoDB has been designed to provide a rapid way to get a fully functional data repository for the development environment so that Front-End developers can start using a fake of the Back-End system very soon in project development. 
+
+## Package Dependencies
+Thanks to Jay Tuley for providing https://github.com/ekonbenefits/impromptu-interface which RedoDB depends on. 
+
+RedoDB depens also on NewtonsoftJson. Thanks!
+
+
+
+
+
 
 
 
