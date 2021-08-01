@@ -12,18 +12,6 @@ namespace BoCode.RedoDB.RedoableData
     /// </summary>
     public class RedoableClock : RedoableData<DateTime>, IRedoableClock
     {
-        private static RedoableClock? _singleton = null;
-
-        public static RedoableClock Singleton()
-        {
-            if (_singleton is null)
-            {
-                RedoableClock clock = new RedoableClock();
-                _singleton = clock;
-            }
-            return _singleton;
-        }
-
         public RedoableClock() : base(() => DateTime.Now)
         {
 

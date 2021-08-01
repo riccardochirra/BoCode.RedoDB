@@ -9,17 +9,19 @@ namespace BoCode.RedoDB
     /// </summary>
     public class InterceptionsManager : IInterceptions, IBuilderComponent
     {
-        List<string> _namesOfMehtodsToBeIntercepted = new();
+        List<string> _namesOfMehtodsOrSetterToBeIntercepted = new();
         List<string> _startingSubstringsCausingExclusion = new();
+        List<string> _namesOfGetterToBeIntercepted = new();
 
         public void AddInterception(string methodName)
         {
-            _namesOfMehtodsToBeIntercepted.Add(methodName);
+            if (_namesOfMehtodsOrSetterToBeIntercepted.Contains(methodName)) return;
+            _namesOfMehtodsOrSetterToBeIntercepted.Add(methodName);
         }
 
         public void AddInterceptions(string[] methodNames)
         {
-            _namesOfMehtodsToBeIntercepted.AddRange(methodNames);
+            _namesOfMehtodsOrSetterToBeIntercepted.AddRange(methodNames);
         }
 
         public void AssertBuildReady()
@@ -44,7 +46,7 @@ namespace BoCode.RedoDB
             return IsExcluded(methodName) ? false : IsIncluded(methodName);
         }
 
-        public void ExcludeMethodsStartingWith(string startingSubstring)
+        public void ExcludeMembersStartingWith(string startingSubstring)
         {
             _startingSubstringsCausingExclusion.Add(startingSubstring);
         }
@@ -60,8 +62,8 @@ namespace BoCode.RedoDB
 
         private bool IsIncluded(string methodName)
         {
-            if (_namesOfMehtodsToBeIntercepted.Count == 0) return true;
-            return _namesOfMehtodsToBeIntercepted.Contains(methodName);
+            if (_namesOfMehtodsOrSetterToBeIntercepted.Count == 0) return true;
+            return _namesOfMehtodsOrSetterToBeIntercepted.Contains(methodName);
         }
 
         public void NoPersistence()
@@ -74,12 +76,23 @@ namespace BoCode.RedoDB
             if (!IsExcluded(name))
             {
                 //Getter must be explicitely included
-                return _namesOfMehtodsToBeIntercepted.Contains(name);
+                return _namesOfGetterToBeIntercepted.Contains(name);
             }
             else
             {
                 return false;
             }
+        }
+
+        public bool CanInterceptSetter(string name)
+        {
+            return CanIntercept(name);
+        }
+
+        public void AddGetterInterception(string name)
+        {
+            if (_namesOfGetterToBeIntercepted.Contains(name)) return;
+            _namesOfGetterToBeIntercepted.Add(name);
         }
     }
 }

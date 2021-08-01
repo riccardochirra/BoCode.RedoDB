@@ -94,9 +94,15 @@ namespace BoCode.RedoDB
             return this;
         }
 
+        public RedoDBEngineBuilder<T, I> InterceptGetter(string name)
+        {
+            _interceptions.AddGetterInterception(name);
+            return this;
+        }
+
         public RedoDBEngineBuilder<T, I> ExcludeMethodsStartingWith(string startingSubstring)
         {
-            _interceptions.ExcludeMethodsStartingWith(startingSubstring);
+            _interceptions.ExcludeMembersStartingWith(startingSubstring);
             return this;
         }
 

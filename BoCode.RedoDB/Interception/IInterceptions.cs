@@ -7,7 +7,9 @@ namespace BoCode.RedoDB
         void AddInterception(string methodName);
         void AddInterceptions(string[] methodNames);
         bool CanIntercept(string methodName);
-        void ExcludeMethodsStartingWith(string startingSubstring);
+        void ExcludeMembersStartingWith(string startingSubstring);
         bool CanInterceptGetter(string name);
+        bool CanInterceptSetter(string name);
+        void AddGetterInterception(string name);
     }
 }

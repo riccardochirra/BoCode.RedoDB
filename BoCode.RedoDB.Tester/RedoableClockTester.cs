@@ -11,22 +11,29 @@ namespace BoCode.RedoDB.Tester
         [Fact(DisplayName = "GIVEN RedoableClock is not redoing WHEN I ask for a new DateTime using Now THEN I get a new DateTime")]
         public void Test1()
         {
-            var clock = RedoableClock.Singleton();
+            DateTime check = DateTime.Now;
+
+            var clock = new RedoableClock();
 
             DateTime now = clock.Now;
 
-            DateTime.Now.Should().HaveMinute(now.Minute);
+            now.Should().HaveYear(check.Year);
+            now.Should().HaveMonth(check.Month);    
+            now.Should().HaveDay(check.Day);
         }
 
-        [Fact(DisplayName = "GIVEN RedoableClock is not redoing WHEN I ask for a new DateTime using Now THEN I get a new DateTime")]
+        [Fact(DisplayName = "GIVEN RedoableClock is redoing WHEN I ask for a new DateTime using Now THEN I get a new DateTime")]
         public void Test2()
         {
-            var clock = RedoableClock.Singleton();
+            var clock = new RedoableClock();
 
             clock.Redoing(new List<DateTime> { new DateTime(2021, 7, 20) });
 
             DateTime now = clock.Now;
 
+            now.Should().HaveYear(2021);
+            now.Should().HaveMonth(7);
+            now.Should().HaveDay(20);
             now.Should().HaveMinute(0);
             now.Should().HaveHour(0);
             now.Should().HaveSecond(0);

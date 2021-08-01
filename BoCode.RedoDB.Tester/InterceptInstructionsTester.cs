@@ -42,7 +42,7 @@ namespace BoCode.RedoDB.Tester
             //ARRANGE
             InterceptionsManager interceptions = new();
             //ACT
-            interceptions.ExcludeMethodsStartingWith("Get");
+            interceptions.ExcludeMembersStartingWith("Get");
             //ASSERT
             interceptions.CanIntercept("GetData").Should().BeFalse();
             interceptions.CanIntercept("SetData").Should().BeTrue();
@@ -54,8 +54,8 @@ namespace BoCode.RedoDB.Tester
             //ARRANGE
             InterceptionsManager interceptions = new();
             //ACT
-            interceptions.ExcludeMethodsStartingWith("Get");
-            interceptions.ExcludeMethodsStartingWith("TryGet");
+            interceptions.ExcludeMembersStartingWith("Get");
+            interceptions.ExcludeMembersStartingWith("TryGet");
             //ASSERT
             interceptions.CanIntercept("GetData").Should().BeFalse();
             interceptions.CanIntercept("TryGetData").Should().BeFalse();

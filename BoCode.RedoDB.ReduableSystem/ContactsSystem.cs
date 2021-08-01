@@ -39,5 +39,8 @@ namespace BoCode.RedoDB.RedoableSystem
         {
             _clock = clock;
         }
+
+        public string SomeInfo { get; set; }
+
     }
 }

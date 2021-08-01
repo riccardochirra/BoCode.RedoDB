@@ -14,16 +14,6 @@ namespace BoCode.RedoDB.RedoableData
     {
         private static RedoableGuid? _singleton = null;
 
-        public static RedoableGuid Singleton()
-        {
-            if (_singleton is null)
-            {
-                RedoableGuid redoableGuid = new RedoableGuid();
-                _singleton = redoableGuid;
-            }
-            return _singleton;
-        }
-
         public RedoableGuid() : base(() => Guid.NewGuid()) { }
     }
 }
