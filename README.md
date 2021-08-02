@@ -10,7 +10,7 @@ Instead of constructing the system directly using the constructor of the system'
 
 ```c#
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new();
-builder.WithDataPath("c:\data");
+builder.WithJsonAdapters("c:\data");
 IContacts contacts = builder.Build();
 ```
 
@@ -60,7 +60,7 @@ The activation of compensation looks as follows:
 
 ```c#
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
-    .WithDataPath("c:\data")
+    .WithJsonAdapters("c:\data")
     .WithCompensation;
 IContacts contacts = builder.Build();
 ```
@@ -75,7 +75,7 @@ You can instruct the builder on what to intercept or mark methods as 'redoable' 
 Example
 ```c#
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
-    .WithDataPath("c:\data")
+    .WithJsonAdapters("c:\data")
     .ExcludeMethodsStartingWith("Get");
 IContacts contacts = builder.Build();
 
@@ -86,7 +86,7 @@ Another method to control interception is the 'AddInterception' method.
 Example
 ```c#
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
-    .WithDataPath("c:\data")
+    .WithJsonAdapters("c:\data")
     .AddInterception("AddContact");
 IContacts contacts = builder.Build();
 ```
@@ -126,12 +126,31 @@ Example:
 The advantage of this approach is that a single configuration setting (for DataPath) is enough. If you move the DataPath to another directory, all systems will automatically follow.
 
 ## RedoableGuid
-If your system needs to use Guid.NewGuid() you would not be able to recover the state, as while recovering the command execution would be repeated but generate another value for the Guid. The solution to this problem is to relay upon the __RedoableData__ class. This generic class can be used with the __Guid__ type. Your system must implement the interface __IDependsOnRedoableGuid__ and in your code, to obtain a new Guid, you should use only the instance of __RedoableData__ provided through the method __SetRedoableGuid__. The original value will be remembered and returned avery time the same command will be redone.
+If your system needs to use __Guid.NewGuid()__ you would not be able to recover the state, as while recovering the command execution would be repeated but generate another value for the Guid. The solution to this problem is to relay upon the __RedoableGuid__ class. This generic class can be used with the __Guid__ type. Your system must implement the interface __IDependsOnRedoableGuid__ and in your code, to obtain a new Guid, you should use only the instance of __RedoableGuid__ provided through the method __SetRedoableGuid__. The original value will be remembered and returned avery time the same command will be redone.
+
+Example
+```C#
+    [Serializable]
+    public class ContactsSystem : IContactsSystem, IDependsOnRedoableGuid
+    {
+        IRedoableGuid _redoableGuid;
+
+        SetRedoableGuid(IRedoableGuid redoableGuid)
+        {
+            _redoableGuid = redoableGuid
+        }
+
+        ...
+
+        public Contact CreateContact(redoableGuid.New())
+        {
+            ...
+```
 
 ## RedoableClock
 If your system needs to call DateTime.Now, for the same reasons as for Guid, you must implement __IDependsOnRedoableClock__ and use the __ReodableClock__ instance to get a redoable value for DateTime.Now. Use only the instance provided to your system by __RedoDBEngine__ through __SetRedoableClock__.
 
-## Please note further
+## Please note
 Be aware of this scalability issue: __RedoDBEngine__ locks to only one writer, while you can have many simultaneous readers. If different clients try to write simultaneously, the calls are queued. 
 
 I have already used the strategy implemented by RedoDB in productive software with success. The biggest snapshots handled in my projects were 6GB big. __RedoDB is not yet tested in such scenarios.__
