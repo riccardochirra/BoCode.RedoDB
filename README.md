@@ -1,6 +1,6 @@
 # BoCode.RedoDB
 
-## Automagic persistence for your object's state
+## Automagical persistence for your object's state
 
 __BoCode.RedoDB__, short __RedoDB__, is a library adding the ability to persist your object state with almost no extra coding.
 

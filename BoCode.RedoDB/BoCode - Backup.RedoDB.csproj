@@ -8,17 +8,20 @@
     <Description>BoCode.RedoDB is a .NET lilbrary providing automagical persistence for your object's state with almost no extra coding.</Description>
     <Copyright>2023 Riccardo Chirra</Copyright>
     <PackageProjectUrl>www.bocode.com</PackageProjectUrl>
-    <PackageIcon></PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/riccardochirra/BoCode.RedoDB.git</RepositoryUrl>
     <PackageTags>persistence; in-memory-db; command-log; snapshot; object-graph; Riccardo Chirra</PackageTags>
     <PackageReleaseNotes>BoCode.RedoDB Version 1.0.0.0. First publication</PackageReleaseNotes>
-    <ApplicationIcon></ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ImpromptuInterface" Version="7.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Images\" />
   </ItemGroup>
 
 </Project>

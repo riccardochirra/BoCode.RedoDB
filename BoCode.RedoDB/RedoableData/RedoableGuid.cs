@@ -12,8 +12,6 @@ namespace BoCode.RedoDB.RedoableData
     /// </summary>
     public class RedoableGuid : RedoableData<Guid>, IRedoableGuid
     {
-        private static RedoableGuid? _singleton = null;
-
         public RedoableGuid() : base(() => Guid.NewGuid()) { }
     }
 }
