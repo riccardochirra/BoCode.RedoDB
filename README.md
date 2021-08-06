@@ -11,7 +11,7 @@ Instead of constructing the system directly using the constructor of the system'
 ```c#
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new();
 builder.WithJsonAdapters("c:\data");
-IContacts contacts = builder.Build();
+IContactsSystem contacts = builder.Build();
 ```
 
 Your system must implement an interface defining all members changing the system's state. 
@@ -62,7 +62,7 @@ The activation of compensation looks as follows:
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
     .WithJsonAdapters("c:\data")
     .WithCompensation;
-IContacts contacts = builder.Build();
+IContactsSystem contacts = builder.Build();
 ```
 >NOTE: during compensation  writers are queued, so response time could slow down. For this reason is preferable that you ensure a valid state in the internal design of your system. This way you can avoid to activate compensation and you can control performance.
 
@@ -77,7 +77,7 @@ Example
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
     .WithJsonAdapters("c:\data")
     .ExcludeMethodsStartingWith("Get");
-IContacts contacts = builder.Build();
+IContactsSystem contacts = builder.Build();
 
 ```
 
@@ -88,7 +88,7 @@ Example
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new()
     .WithJsonAdapters("c:\data")
     .AddInterception("AddContact");
-IContacts contacts = builder.Build();
+IContactsSystem contacts = builder.Build();
 ```
 
 Using this method implies that you want to control Interception by adding all the methods you want to intercept manually. Our system would not intercept 'GetAll' or 'Count' anymore.
