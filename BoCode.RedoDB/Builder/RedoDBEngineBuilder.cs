@@ -263,11 +263,7 @@ namespace BoCode.RedoDB.Builder
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
 
-            //recover from snapshot
-
-            T? recovered = _snapshotAdapter.Deserialize();
-
-            if (recovered is null) recovered = new T();
+            T recovered = _snapshotAdapter.Deserialize() ?? new T();
 
             RecoverFromLogs(recovered);
 
