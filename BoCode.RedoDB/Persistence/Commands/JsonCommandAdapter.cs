@@ -101,20 +101,18 @@ namespace BoCode.RedoDB.Persistence.Commands
             _withNoPersistence = true;
         }
 
-        [MaybeNull]
-        public string LastCommandLog
+        public string? LastCommandLog
         {
             get
             {
                 if (_lastCommandLog is null)
                 {
-                    IOrderedEnumerable<FileInfo> files = _dataPath.GetFiles("*.commandlog").ToList().OrderBy(x => x.Name);
+                    var files = _dataPath.GetFiles("*.commandLog").OrderBy(x => x.Name).ToList();
                     if (files.Any())
                     {
                         _lastCommandLog = files.Last().FullName;
                     }
                 }
-                //if (_lastCommandLog is null) throw new RedoDBEngineException("Last command log could not be retrieved. Uknown cause.");
                 return _lastCommandLog;
             }
         }
