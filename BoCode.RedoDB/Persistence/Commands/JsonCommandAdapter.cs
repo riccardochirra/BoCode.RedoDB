@@ -37,10 +37,10 @@ namespace BoCode.RedoDB.Persistence.Commands
 
             if (_fileStream is not null)
             {
-                using var stream = new MemoryStream();
+                await using var stream = new MemoryStream();
                 var serializer = new JsonSerializer();
                 serializer.TypeNameHandling = TypeNameHandling.Objects;
-                using (var sw = new StreamWriter(stream))
+                await using (var sw = new StreamWriter(stream))
                 {
                     using (JsonWriter writer = new JsonTextWriter(sw))
                     {
