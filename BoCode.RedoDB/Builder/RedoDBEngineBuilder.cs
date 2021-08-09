@@ -199,7 +199,7 @@ namespace BoCode.RedoDB.Builder
             }
             else
             {
-                T newInstance = new T();
+                T newInstance = new();
                 if (newInstance is not I) throw new RedoDBEngineException("System T does not implement interface I!");
                 redoable = new RedoDBEngine<T>(newInstance, _snapshotAdapter, _commandAdapter).ActLike<I>(typeof(IRedoDBEngine<T>), typeof(IRedoEngineInternal<T>));
             }
@@ -219,7 +219,6 @@ namespace BoCode.RedoDB.Builder
                 engine.SetRecoveredFaultyCommands(_compensationManager.FaultyCommands);
             }
             engine.SetRecoveredCommands(_recoveredCommands);
-
         }
 
         //get latest snapshot
@@ -231,11 +230,7 @@ namespace BoCode.RedoDB.Builder
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
 
-            //recover from snapshot
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            T? recovered = await _snapshotAdapter.DeserializeAsync();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-            if (recovered is null) recovered = new T();
+            T recovered = await _snapshotAdapter.DeserializeAsync() ?? new T();
 
             RecoverFromLogs(recovered);
 
