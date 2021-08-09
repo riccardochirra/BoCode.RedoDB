@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31423.177
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoCode.RedoDB.ConsoleApp", "BoCode.RedoDB.ConsoleApp\BoCode.RedoDB.ConsoleApp.csproj", "{8912E38C-C17C-4ADC-82F4-17B810C7BB6E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoCode.RedoDB.RedoableSystem", "BoCode.RedoDB.ReduableSystem\BoCode.RedoDB.RedoableSystem.csproj", "{DCC2B0F6-138C-460F-B0A3-F1BAB3DFC79A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoCode.RedoDB.RedoableSystem", "BoCode.RedoDB.RedoableSystem\BoCode.RedoDB.RedoableSystem.csproj", "{DCC2B0F6-138C-460F-B0A3-F1BAB3DFC79A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoCode.RedoDB.Tester", "BoCode.RedoDB.Tester\BoCode.RedoDB.Tester.csproj", "{37A33E42-580A-4CCC-8657-57D79E80A76F}"
 EndProject
