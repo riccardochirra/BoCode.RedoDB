@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BoCode.RedoDB.Persistence.Infrastructure;
 
 
 namespace BoCode.RedoDB.Persistence.Snapshots

@@ -2,6 +2,7 @@
 using BoCode.RedoDB.Persistence.Commands;
 using System;
 using System.Collections.Generic;
+using BoCode.RedoDB.Interception;
 
 namespace BoCode.RedoDB
 {

@@ -2,6 +2,7 @@ using BoCode.RedoDB.RedoableSystem;
 using FluentAssertions;
 using System.Linq;
 using System.Threading.Tasks;
+using BoCode.RedoDB.Builder;
 using Xunit;
 
 namespace BoCode.RedoDB.Tester

@@ -1,7 +1,7 @@
-﻿using BoCode.RedoDB.Builder;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using BoCode.RedoDB.Builder;
 
-namespace BoCode.RedoDB
+namespace BoCode.RedoDB.Interception
 {
     /// <summary>
     /// this class can be prepared by teh builder and given to the RedoEngine in order to restrict the methods

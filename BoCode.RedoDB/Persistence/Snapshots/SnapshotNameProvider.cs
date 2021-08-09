@@ -1,4 +1,6 @@
-﻿namespace BoCode.RedoDB.Persistence
+﻿using BoCode.RedoDB.Persistence.Infrastructure;
+
+namespace BoCode.RedoDB.Persistence.Snapshots
 {
 
     public class SnapshotNameProvider : NumberedNameProviderBase, ISnapshotOrLogNameProvider

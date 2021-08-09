@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BoCode.RedoDB.Persistence
+namespace BoCode.RedoDB.Persistence.Snapshots
 {
     public interface ISnapshotManager<T> : IDisposable
     {

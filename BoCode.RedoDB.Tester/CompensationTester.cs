@@ -3,6 +3,7 @@ using BoCode.RedoDB.Tester.Infrastructure;
 using FluentAssertions;
 using System;
 using System.Linq;
+using BoCode.RedoDB.Builder;
 using Xunit;
 
 namespace BoCode.RedoDB.Tester

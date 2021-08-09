@@ -1,5 +1,6 @@
 ﻿using BoCode.RedoDB.Persistence;
 using BoCode.RedoDB.Persistence.Commands;
+using BoCode.RedoDB.Persistence.Snapshots;
 using FluentAssertions;
 using Xunit;
 

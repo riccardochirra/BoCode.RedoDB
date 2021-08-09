@@ -1,4 +1,4 @@
-﻿namespace BoCode.RedoDB.Persistence
+﻿namespace BoCode.RedoDB.Persistence.Infrastructure
 {
     public interface ISnapshotOrLogNameProvider
     {

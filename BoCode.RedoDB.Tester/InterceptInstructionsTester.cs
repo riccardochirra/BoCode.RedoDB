@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using BoCode.RedoDB.Interception;
+using FluentAssertions;
 using Xunit;
 
 namespace BoCode.RedoDB.Tester

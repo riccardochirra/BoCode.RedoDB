@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using BoCode.RedoDB.Builder;
 using Xunit;
 
 namespace BoCode.RedoDB.Tester

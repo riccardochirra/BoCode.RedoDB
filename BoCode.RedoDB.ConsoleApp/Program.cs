@@ -1,6 +1,7 @@
 ﻿using BoCode.RedoDB.RedoableSystem;
 using System;
 using System.Threading.Tasks;
+using BoCode.RedoDB.Builder;
 
 namespace BoCode.RedoDB.ConsoleApp
 {

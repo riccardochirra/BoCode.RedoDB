@@ -1,8 +1,8 @@
-﻿using BoCode.RedoDB.Builder;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using BoCode.RedoDB.Builder;
 
-namespace BoCode.RedoDB.Persistence
+namespace BoCode.RedoDB.Persistence.Snapshots
 {
     /// <summary>
     /// This interface must be implemented by the snapshot persistence adapter

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace BoCode.RedoDB.Persistence
+namespace BoCode.RedoDB.Persistence.Infrastructure
 {
     abstract public class NumberedNameProviderBase
     {
