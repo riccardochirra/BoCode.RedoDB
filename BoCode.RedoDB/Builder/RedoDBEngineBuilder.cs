@@ -249,7 +249,7 @@ namespace BoCode.RedoDB.Builder
         private void RedoCommands(T recovered)
         {
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
-            //redo commands
+ 
             foreach (Commandlog log in _commandAdapter.RecoveringLogs)
             {
                 Redo(recovered, log);
