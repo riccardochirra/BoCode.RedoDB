@@ -272,19 +272,20 @@ namespace BoCode.RedoDB.Builder
 
         private void HandleRedoableDependencies(T recovered)
         {
-            if (recovered is IDependsOnRedoableGuid)
+            if (recovered is IDependsOnRedoableGuid recoveredRedoableGuid)
             {
                 _redoableGuid = new RedoableGuid();
-                ((IDependsOnRedoableGuid)recovered).SetRedoableGuid(_redoableGuid);
+                recoveredRedoableGuid.SetRedoableGuid(_redoableGuid);
             }
-            if (recovered is IDependsOnRedoableClock)
+            if (recovered is IDependsOnRedoableClock recoveredRedoableClock)
             {
                 _redoableClock = new RedoableClock();
-                ((IDependsOnRedoableClock)recovered).SetRedoableClock(_redoableClock);
+                recoveredRedoableClock.SetRedoableClock(_redoableClock);
             }
             if (_compensationActive)
             {
                 if (_compensationManager is null) throw new ArgumentNullException(nameof(_compensationManager));
+ 
                 _compensationManager.SetRedoableData(_redoableGuid, _redoableClock);
             }
         }
