@@ -13,7 +13,7 @@ namespace BoCode.RedoDB.Compensation
     /// </summary>
     public class CompensationManager<T> where T : class, new()
     {
-        List<Command> _faultyCommands = new List<Command>();
+        List<Command> _faultyCommands = new();
 
         private ISnapshotAdapter<T>? _snapshotAdapter;
         private IRedoableGuid? _redoableGuid;
@@ -34,8 +34,9 @@ namespace BoCode.RedoDB.Compensation
         {
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
             _faultyCommands.Add(faultyCommand);
-            T? compensated = _snapshotAdapter.GetLastSnapshot();
-            if (compensated is null) compensated = new T();
+            
+            T compensated = _snapshotAdapter.GetLastSnapshot() ?? new T();
+            
             int i = 0;
             var command = log[0];
             while (command != faultyCommand)
