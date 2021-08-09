@@ -4,6 +4,7 @@ using BoCode.RedoDB.RedoableData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BoCode.RedoDB.Persistence.Snapshots;
 
 namespace BoCode.RedoDB.Compensation
 {

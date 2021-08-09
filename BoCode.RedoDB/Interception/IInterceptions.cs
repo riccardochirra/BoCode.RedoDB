@@ -1,6 +1,6 @@
 ﻿using BoCode.RedoDB.Builder;
 
-namespace BoCode.RedoDB
+namespace BoCode.RedoDB.Interception
 {
     public interface IInterceptions : IBuilderComponent
     {

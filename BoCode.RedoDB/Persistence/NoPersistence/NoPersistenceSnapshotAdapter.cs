@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BoCode.RedoDB.Persistence.Snapshots;
 
 namespace BoCode.RedoDB.Persistence.NoPersistence
 {

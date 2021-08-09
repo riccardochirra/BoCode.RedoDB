@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using BoCode.RedoDB.Interception;
+using BoCode.RedoDB.Persistence.Snapshots;
 
 namespace BoCode.RedoDB
 {

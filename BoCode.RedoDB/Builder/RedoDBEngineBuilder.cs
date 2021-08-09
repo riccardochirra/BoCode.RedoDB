@@ -1,18 +1,18 @@
-﻿using BoCode.RedoDB.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using BoCode.RedoDB.Compensation;
+using BoCode.RedoDB.Interception;
 using BoCode.RedoDB.Persistence;
 using BoCode.RedoDB.Persistence.Commands;
 using BoCode.RedoDB.Persistence.NoPersistence;
 using BoCode.RedoDB.Persistence.Snapshots;
 using BoCode.RedoDB.RedoableData;
 using ImpromptuInterface;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace BoCode.RedoDB
+namespace BoCode.RedoDB.Builder
 {
     /// <summary>
     /// If you want to have more control on how the RedoEngine operates, you should use the RedoEngineBuilder to configure it.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace BoCode.RedoDB.Persistence
+namespace BoCode.RedoDB.Persistence.Snapshots
 {
     /// <summary>
     /// The SnapshotManager is responsible for the redoable's object graph serialization and deserialization.

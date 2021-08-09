@@ -1,4 +1,6 @@
-﻿namespace BoCode.RedoDB.Persistence.Commands
+﻿using BoCode.RedoDB.Persistence.Infrastructure;
+
+namespace BoCode.RedoDB.Persistence.Commands
 {
     public class CommandLogNameProvider : NumberedNameProviderBase, ISnapshotOrLogNameProvider
     {
