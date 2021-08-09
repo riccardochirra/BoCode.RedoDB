@@ -86,13 +86,13 @@ namespace BoCode.RedoDB.Compensation
             }
         }
 
-        public static void RedoInvoke(T recovered, Command command)
+        private static void RedoInvoke(T recovered, Command command)
         {
             var method = recovered.GetType().GetMethod(command.MemberName);
             var parameters = method?.GetParameters();
             if (parameters is not null)
             {
-                object?[]? args = new object[parameters.Count()];
+                object?[] args = new object[parameters.Length];
                 int i = 0;
                 foreach (var p in parameters)
                 {
