@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BoCode.RedoDB.ReduableSystem\BoCode.RedoDB.RedoableSystem.csproj" />
+    <ProjectReference Include="..\BoCode.RedoDB.RedoableSystem\BoCode.RedoDB.RedoableSystem.csproj" />
     <ProjectReference Include="..\BoCode.RedoDB\BoCode.RedoDB.csproj" />
   </ItemGroup>
 

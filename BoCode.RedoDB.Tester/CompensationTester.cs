@@ -1,9 +1,9 @@
-﻿using BoCode.RedoDB.RedoableSystem;
-using BoCode.RedoDB.Tester.Infrastructure;
+﻿using BoCode.RedoDB.Tester.Infrastructure;
 using FluentAssertions;
 using System;
 using System.Linq;
 using BoCode.RedoDB.Builder;
+using BoCode.RedoDB.RedoableSystem;
 using Xunit;
 
 namespace BoCode.RedoDB.Tester
