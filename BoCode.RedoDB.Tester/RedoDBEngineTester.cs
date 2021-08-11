@@ -166,11 +166,17 @@ namespace BoCode.RedoDB.Tester
                 contacts2.AddContact(new() { Name = "Name2" });
                 RedoDBEngine<ContactsSystem>.GetEngine(contacts2).TakeSnapshot();
             }
-            var files = Directory.GetFiles(dataPath).Select(x => new FileInfo(x).Name);
-            files.Count().Should().Be(3);
-            files.ElementAt(0).Should().Be("00000000000000000001.commandlog");
-            files.ElementAt(1).Should().Be("00000000000000000002.commandlog");
-            files.ElementAt(2).Should().Be("00000000000000000002.snapshot");
+            
+            var files = Directory.GetFiles(dataPath)
+                .Select(x => new FileInfo(x).Name)
+                .OrderBy(x => x)
+                .ToList();
+
+            files.Should().HaveCount(3);
+            
+            files[0].Should().Be("00000000000000000001.commandlog");
+            files[1].Should().Be("00000000000000000002.commandlog");
+            files[2].Should().Be("00000000000000000002.snapshot");
         }
 
         [Fact(DisplayName = "Recovering from log containing property interceptions.")]
