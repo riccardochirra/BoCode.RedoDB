@@ -226,9 +226,10 @@ namespace BoCode.RedoDB
         //deserialize and return T
         private async Task<T> RecoverRedoableAsync()
         {
+            if (_withNoPersistence) return new T();
+
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
-            if (_withNoPersistence) return new T();
 
             //recover from snapshot
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
@@ -236,11 +237,18 @@ namespace BoCode.RedoDB
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             if (recovered is null) recovered = new T();
 
+            RecoverFromLogs(recovered);
+
+            return recovered;
+        }
+
+        private void RecoverFromLogs(T? recovered)
+        {
+            HandleRedoableDependencies(recovered);
+
             _commandAdapter.LastSnapshotName = _snapshotAdapter.LastSnapshot == null ? string.Empty : new FileInfo(_snapshotAdapter.LastSnapshot).Name;
 
             RedoCommands(recovered);
-
-            return recovered;
         }
 
         private void RedoCommands(T recovered)
@@ -255,9 +263,10 @@ namespace BoCode.RedoDB
 
         private T RecoverRedoable()
         {
+            if (_withNoPersistence) return new T();
+
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
-            if (_withNoPersistence) return new T();
 
             //recover from snapshot
 
@@ -265,11 +274,7 @@ namespace BoCode.RedoDB
 
             if (recovered is null) recovered = new T();
 
-            HandleRedoableDependencies(recovered);
-
-            _commandAdapter.LastSnapshotName = _snapshotAdapter.LastSnapshot == null ? string.Empty : new FileInfo(_snapshotAdapter.LastSnapshot).Name;
-
-            RedoCommands(recovered);
+            RecoverFromLogs(recovered);
 
             return recovered;
         }

@@ -31,7 +31,7 @@ namespace BoCode.RedoDB.Persistence
 
         public void Dispose()
         {
-            _adapter?.Dispose();
+            _adapter.Dispose();
         }
 
         public T? GetLastDeserialization()

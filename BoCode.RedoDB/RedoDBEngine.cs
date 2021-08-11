@@ -102,7 +102,6 @@ namespace BoCode.RedoDB
                 if (_compensationActive)
                 {
                     SetRedoable(Compensate(_commands.Log.Last(), _commands.Log.ToList()));
-
                 }
             }
         }
