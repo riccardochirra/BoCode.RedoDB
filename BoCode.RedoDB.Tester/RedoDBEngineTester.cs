@@ -135,12 +135,17 @@ namespace BoCode.RedoDB.Tester
                 RedoDBEngine<ContactsSystem>.GetEngine(contacts3).TakeSnapshot();
             }
 
-            var files = Directory.GetFiles(dataPath).Select(x => new FileInfo(x).Name);
-            files.Count().Should().Be(4);
-            files.ElementAt(0).Should().Be("00000000000000000001.commandlog");
-            files.ElementAt(1).Should().Be("00000000000000000002.commandlog");
-            files.ElementAt(2).Should().Be("00000000000000000003.commandlog");
-            files.ElementAt(3).Should().Be("00000000000000000003.snapshot");
+            var files = Directory.GetFiles(dataPath)
+                .Select(x => new FileInfo(x).Name)
+                .OrderBy(x => x)
+                .ToList();
+            
+            files.Should().HaveCount(4);
+           
+            files[0].Should().Be("00000000000000000001.commandlog");
+            files[1].Should().Be("00000000000000000002.commandlog");
+            files[2].Should().Be("00000000000000000003.commandlog");
+            files[3].Should().Be("00000000000000000003.snapshot");
         }
 
         [Fact(DisplayName = "Starting and stopping (disposing) the engine 2 times causes 2 logs to be created. " +
