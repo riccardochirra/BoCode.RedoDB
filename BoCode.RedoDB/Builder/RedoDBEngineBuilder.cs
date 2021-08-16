@@ -142,7 +142,7 @@ namespace BoCode.RedoDB.Builder
             else
             {
                 DirectoryInfo path = GetPath();
-                _commandAdapter = new JsonCommandAdapter(path, new CommandLogNameProvider());
+                _commandAdapter = new JsonCommandAdapter(path, new CommandlogNameProvider());
                 _snapshotAdapter = new JsonSnapshotAdapter<T>(path, new SnapshotNameProvider());
             }
             if (_compensationActive)

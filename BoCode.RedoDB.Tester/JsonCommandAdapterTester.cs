@@ -18,7 +18,7 @@ namespace BoCode.RedoDB.Tester
         {
             //ARRANGE
             var dataPath = NewDataPath;
-            using JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            using JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             Command command = new Command(
                 CommandType.Method,
                 "Test",
@@ -43,7 +43,7 @@ namespace BoCode.RedoDB.Tester
         {
             //ARRANGE
             var dataPath = NewDataPath;
-            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             //ACT
             Command command = new Command(CommandType.Method, "Command1", new object[] { new DateTime(2021, 7, 13) }, null);
             await adapter.WriteCommandAsync(command);
@@ -73,7 +73,7 @@ namespace BoCode.RedoDB.Tester
             File.WriteAllText(Path.Combine(dataPath, "00000000000000000001.commandlog"), commandlog);
 
             //ACT
-            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             adapter.LastSnapshotName = string.Empty;
             var recoveringLogs = adapter.RecoveringLogs;
 
@@ -94,7 +94,7 @@ namespace BoCode.RedoDB.Tester
             IEnumerable<Commandlog> recoveringLogs = null;
 
             //ACT
-            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             Action lastSnapshotName = () => recoveringLogs = adapter.RecoveringLogs;
 
             lastSnapshotName.Should().Throw<RedoDBEngineException>();
@@ -118,7 +118,7 @@ namespace BoCode.RedoDB.Tester
             File.WriteAllText(Path.Combine(dataPath, "00000000000000000002.commandlog"), commandlog2);
 
             //ACT
-            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             adapter.LastSnapshotName = "00000000000000000001.snapshot";
             var recoveringLogs = adapter.RecoveringLogs;
 
@@ -148,7 +148,7 @@ namespace BoCode.RedoDB.Tester
             File.WriteAllText(Path.Combine(dataPath, "00000000000000000003.commandlog"), commandlog3);
 
             //ACT
-            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             adapter.LastSnapshotName = "00000000000000000001.snapshot";
             var recoveringLogs = adapter.RecoveringLogs;
 
@@ -171,7 +171,7 @@ namespace BoCode.RedoDB.Tester
             File.WriteAllText(Path.Combine(dataPath, "00000000000000000001.commandlog"), commandlog);
 
             //ACT
-            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandLogNameProvider());
+            JsonCommandAdapter adapter = new JsonCommandAdapter(new(dataPath), new CommandlogNameProvider());
             adapter.LastSnapshotName = "00000000000000000003.snapshot";
             var recoveringLogs = adapter.RecoveringLogs;
 
