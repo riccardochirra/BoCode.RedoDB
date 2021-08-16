@@ -51,13 +51,10 @@ namespace BoCode.RedoDB.Persistence.Commands
                 //get bytes from stream
                 byte[] bytes = stream.GetBuffer();
 
-                //string json = JsonConvert.SerializeObject(command);
-                //byte[] bytes = Encoding.UTF8.GetBytes(json);
-
                 EnsureCommandLog();
 
                 _fileStream.SetLength(_fileStream.Position + bytes.Length);
-                await _fileStream.WriteAsync(bytes, 0, bytes.Length);
+                await _fileStream.WriteAsync(bytes);
                 await _fileStream.FlushAsync();
             }
         }
