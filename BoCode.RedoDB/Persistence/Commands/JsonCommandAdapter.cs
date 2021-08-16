@@ -107,7 +107,7 @@ namespace BoCode.RedoDB.Persistence.Commands
             {
                 if (_lastCommandLog is null)
                 {
-                    var files = _dataPath.GetFiles("*.commandLog").OrderBy(x => x.Name).ToList();
+                    var files = _dataPath.GetFiles("*.commandlog").OrderBy(x => x.Name).ToList();
                     if (files.Any())
                     {
                         _lastCommandLog = files.Last().FullName;

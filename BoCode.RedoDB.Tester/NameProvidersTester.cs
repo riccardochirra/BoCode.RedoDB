@@ -19,7 +19,7 @@ namespace BoCode.RedoDB.Tester
         [Fact(DisplayName = "New log file name for 00000000000000000001.snapshot is 00000000000000000002.snapshot")]
         public void Test2()
         {
-            CommandLogNameProvider sut = new CommandLogNameProvider();
+            CommandlogNameProvider sut = new CommandlogNameProvider();
             sut.NewName("00000000000000000001.commandlog").Should().Be("00000000000000000002.commandlog");
         }
 
@@ -33,7 +33,7 @@ namespace BoCode.RedoDB.Tester
         [Fact(DisplayName = "First log name is 00000000000000000001.snapshot")]
         public void Test4()
         {
-            CommandLogNameProvider sut = new CommandLogNameProvider();
+            CommandlogNameProvider sut = new CommandlogNameProvider();
             sut.FirstName.Should().Be("00000000000000000001.commandlog");
         }
 
@@ -47,7 +47,7 @@ namespace BoCode.RedoDB.Tester
         [Fact(DisplayName = "New log file name for 00000000000000000001.snapshot is 00000000000000000002.snapshot")]
         public void Test6()
         {
-            CommandLogNameProvider sut = new CommandLogNameProvider();
+            CommandlogNameProvider sut = new CommandlogNameProvider();
             sut.NewName("1").Should().Be("00000000000000000002.commandlog");
         }
 
