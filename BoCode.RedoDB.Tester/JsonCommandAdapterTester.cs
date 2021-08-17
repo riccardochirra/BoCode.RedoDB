@@ -7,12 +7,15 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
     [Collection("Test Directory Collection")]
     public class JsonCommandAdapterTester : TesterWithDataPath
     {
+        public JsonCommandAdapterTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "A command can be serialized")]
         public async Task Test1()
         {

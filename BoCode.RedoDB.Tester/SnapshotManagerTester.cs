@@ -6,11 +6,14 @@ using FluentAssertions;
 using System.IO;
 using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
     public class SnapshotManagerTester : TesterWithDataPath
     {
+        public SnapshotManagerTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "Last snapshot can't be found")]
         public void Test1()
         {

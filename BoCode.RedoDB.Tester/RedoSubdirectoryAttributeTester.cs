@@ -5,11 +5,14 @@ using System.IO;
 using System.Linq;
 using BoCode.RedoDB.Builder;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
     public class RedoSubdirectoryAttributeTester : TesterWithDataPath
     {
+        public RedoSubdirectoryAttributeTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "GIVEN a redoable system is marked with the RedoSubdirectoryAttribute " +
                             "WHEN the commandlog is created " +
                             "THEN it is created in the specified subdirectory of the datapath.")]

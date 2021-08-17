@@ -6,12 +6,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using BoCode.RedoDB.Builder;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
     [Collection("Test Directory Collection")]
     public class RedoDBEngineTester : TesterWithDataPath
     {
+        public RedoDBEngineTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "GIVEN a redoable WHEN a snapshot is taken THEN a snapshot file is found in the data path folder.")]
         public async Task Test1()
         {

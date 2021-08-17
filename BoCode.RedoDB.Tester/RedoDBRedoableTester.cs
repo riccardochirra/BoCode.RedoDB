@@ -5,11 +5,14 @@ using System;
 using System.Linq;
 using BoCode.RedoDB.Builder;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
     public class RedoDBRedoableTester : TesterWithDataPath
     {
+        public RedoDBRedoableTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "GIVEN a System implementing IDependOnRedoableGuid and IDependOnRedoableClock WHEN I use a method generating a Guid and recover the system THEN The same Guid is returned.")]
         public void Test()
         {
