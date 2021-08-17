@@ -5,11 +5,14 @@ using System.Linq;
 using BoCode.RedoDB.Builder;
 using BoCode.RedoDB.RedoableSystem;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
     public class CompensationTester : TesterWithDataPath
     {
+        public CompensationTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "The error thrown in the command execution code can be caught.")]
         public void Test1()
         {

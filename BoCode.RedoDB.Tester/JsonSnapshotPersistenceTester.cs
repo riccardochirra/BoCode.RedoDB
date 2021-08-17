@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
@@ -21,6 +22,8 @@ namespace BoCode.RedoDB.Tester
     [Collection("Test Directory Collection")]
     public class JsonSnapshotPersistenceTester : TesterWithDataPath
     {
+        public JsonSnapshotPersistenceTester(ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "Serialize a redoable")]
         public void Test1()
         {

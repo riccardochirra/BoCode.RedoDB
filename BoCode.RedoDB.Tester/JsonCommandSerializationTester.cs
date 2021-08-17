@@ -11,6 +11,8 @@ namespace BoCode.RedoDB.Tester
 {
     public class JsonCommandSerializationTester : TesterWithDataPath
     {
+        public JsonCommandSerializationTester(Xunit.Abstractions.ITestOutputHelper output) : base(output) { }
+
         [Fact(DisplayName = "Serialize and deserialize command and args types are preserved.")]
         public void Test1()
         {
