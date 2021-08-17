@@ -49,10 +49,15 @@ namespace BoCode.RedoDB.Tester
             }
 
             //ASSERT
-            var files = Directory.GetFiles(Path.Combine(dataPath, "Subdirectory")).Select(x => new FileInfo(x).Name);
-            files.Count().Should().Be(2);
-            files.ElementAt(0).Should().Be("00000000000000000001.commandlog");
-            files.ElementAt(1).Should().Be("00000000000000000001.snapshot");
+            var files = Directory.GetFiles(Path.Combine(dataPath, "Subdirectory"))
+                .Select(x => new FileInfo(x).Name)
+                .OrderBy(x => x)
+                .ToList();
+
+            files.Should().HaveCount(2);
+            
+            files[0].Should().Be("00000000000000000001.commandlog");
+            files[1].Should().Be("00000000000000000001.snapshot");
         }
     }
 }

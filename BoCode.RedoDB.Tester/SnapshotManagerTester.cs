@@ -69,9 +69,14 @@ namespace BoCode.RedoDB.Tester
             snapshotManager.TakeSnapshot();
 
             //ASSERT
-            var files = directoryInfo.GetFiles("*.snapshot");
-            files.Count().Should().Be(2);
-            files.Last().Name.Should().Be("00000000000000000002.snapshot");
+            var files = directoryInfo
+                .GetFiles("*.snapshot")
+                .OrderBy(f => f.FullName)
+                .ToList();
+
+            files.Should().HaveCount(2);
+            
+            files[^1].Name.Should().Be("00000000000000000002.snapshot");
         }
     }
 }
