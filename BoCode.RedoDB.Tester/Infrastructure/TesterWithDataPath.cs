@@ -31,7 +31,5 @@ namespace BoCode.RedoDB.Tester.Infrastructure
             if (!Directory.Exists(dataPath))
                 Directory.CreateDirectory(dataPath);
         }
-
-
     }
 }
