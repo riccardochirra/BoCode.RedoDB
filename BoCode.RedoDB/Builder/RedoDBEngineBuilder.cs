@@ -15,8 +15,7 @@ using ImpromptuInterface;
 namespace BoCode.RedoDB.Builder
 {
     /// <summary>
-    /// If you want to have more control on how the RedoEngine operates, you should use the RedoEngineBuilder to configure it.
-    /// The builder let choose what to intercept even if you are not the author of the class you want to become redoable. 
+    /// This class must be used to build a RedoDBEngine. The builder is also responsible for the 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="I"></typeparam>
@@ -34,6 +33,7 @@ namespace BoCode.RedoDB.Builder
         private bool _compensationActive = false;
         private CompensationManager<T>? _compensationManager;
         private List<Command> _recoveredCommands = new();
+        private bool _withCommandlogOnly = false;
 
         public List<Command> FaultyCommands { get; private set; } = new List<Command>();
 
@@ -143,7 +143,10 @@ namespace BoCode.RedoDB.Builder
             {
                 DirectoryInfo path = GetPath();
                 _commandAdapter = new JsonCommandAdapter(path, new CommandlogNameProvider());
-                _snapshotAdapter = new JsonSnapshotAdapter<T>(path, new SnapshotNameProvider());
+                if (_withCommandlogOnly)
+                    _snapshotAdapter = new NoPersistenceSnapshotAdapter<T>();   
+                else
+                    _snapshotAdapter = new JsonSnapshotAdapter<T>(path, new SnapshotNameProvider());
             }
             if (_compensationActive)
             {
@@ -258,7 +261,7 @@ namespace BoCode.RedoDB.Builder
 
         private T RecoverRedoable()
         {
-            if (_withNoPersistence) return new T();
+            if (_withCommandlogOnly || _withNoPersistence) return new T();
 
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
@@ -337,6 +340,12 @@ namespace BoCode.RedoDB.Builder
         public void WithJsonAdapters(string dataPath)
         {
             _dataPath = dataPath;
+        }
+
+        public void WithCommandlogOnly()
+        {
+            if (_withNoPersistence) throw new RedoDBEngineException("The WithCommandlogOnly option can't be used together with WithNoPersistence!");
+            _withCommandlogOnly = true;
         }
     }
 }
