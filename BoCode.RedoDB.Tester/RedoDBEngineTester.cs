@@ -13,7 +13,7 @@ namespace BoCode.RedoDB.Tester
     [Collection("Test Directory Collection")]
     public class RedoDBEngineTester : TesterWithDataPath
     {
-        public RedoDBEngineTester(ITestOutputHelper output) : base(output) { }
+        public RedoDBEngineTester(ITestOutputHelper output) : base(output) { } 
 
         [Fact(DisplayName = "GIVEN a redoable WHEN a snapshot is taken THEN a snapshot file is found in the data path folder.")]
         public async Task Test1()
@@ -70,7 +70,7 @@ namespace BoCode.RedoDB.Tester
             RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder2 = new();
             builder2.WithJsonAdapters(dataPath);
             IContactsSystem contacts2 = await builder2.BuildAsync();
-
+            _output.WriteLine($"contacts count is {contacts2.Count()}");
             Contact contact = contacts2.GetAll().Single();
 
             //ASSERT
