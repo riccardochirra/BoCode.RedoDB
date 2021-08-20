@@ -7,7 +7,7 @@ namespace BoCode.RedoDB.Tester.Infrastructure
 {
     public class TesterWithDataPath
     {
-        private readonly ITestOutputHelper _output;
+        protected readonly ITestOutputHelper _output;
 
         const string TEST_DIRECTORIES = "Test Directories";
 
