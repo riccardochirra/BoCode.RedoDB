@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace BoCode.RedoDB.Persistence.Commands
 {
-    public interface ICommandsManager<T> : IBuilderComponent, IDisposable where T : class, new()
+    public interface ICommandsManager<T> : IBuilderComponent, IDisposable where T : class
     {
         IEnumerable<Command> Log { get; }
         IEnumerable<Command> RecoveringLog { get; set; }

@@ -18,7 +18,7 @@ namespace BoCode.RedoDB
     /// deserialize T from the snapshot reapplying commandlogs as needed to restore state of T
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RedoDBEngine<T> : DynamicObject, IRedoDBEngine<T>, IRedoEngineInternal<T> where T : class, new()
+    public class RedoDBEngine<T> : DynamicObject, IRedoDBEngine<T>, IRedoEngineInternal<T> where T : class
     {
         private T _redoableObject;
         private IInterceptions _interceptions;

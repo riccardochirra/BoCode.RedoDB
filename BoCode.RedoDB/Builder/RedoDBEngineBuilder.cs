@@ -20,7 +20,7 @@ namespace BoCode.RedoDB.Builder
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="I"></typeparam>
     public class RedoDBEngineBuilder<T, I> : IWithDataPath
-        where T : class, new()
+        where T : class
         where I : class
     {
         private IInterceptions _interceptions;
@@ -34,15 +34,14 @@ namespace BoCode.RedoDB.Builder
         private CompensationManager<T> _compensationManager;
         private List<Command> _recoveredCommands = new List<Command>();
         private bool _withCommandlogOnly = false;
+        private Func<T> _creator;
 
         public List<Command> FaultyCommands { get; private set; } = new List<Command>();
 
-        /// <summary>
-        /// The parameterless constructor uses and empty InterceptInstructions and the default CommandManagager. 
-        /// </summary>
-        public RedoDBEngineBuilder()
+        public RedoDBEngineBuilder(Func<T> creator = null)
         {
-            _interceptions = new InterceptionsManager();
+	        _creator = creator ?? Activator.CreateInstance<T>;
+	        _interceptions = new InterceptionsManager();
         }
 
         public RedoDBEngineBuilder(IInterceptions interceptionManager)
@@ -150,7 +149,7 @@ namespace BoCode.RedoDB.Builder
             }
             if (_compensationActive)
             {
-                _compensationManager = new CompensationManager<T>();
+                _compensationManager = new CompensationManager<T>(_creator);
                 _compensationManager.SetSnapshotAdapter(_snapshotAdapter);
             }
         }
@@ -202,7 +201,7 @@ namespace BoCode.RedoDB.Builder
             }
             else
             {
-                T newInstance = new T();
+                T newInstance = _creator();
                 if (!(newInstance is I)) throw new RedoDBEngineException("System T does not implement interface I!");
                 redoable = new RedoDBEngine<T>(newInstance, _snapshotAdapter, _commandAdapter).ActLike<I>(typeof(IRedoDBEngine<T>), typeof(IRedoEngineInternal<T>));
             }
@@ -228,12 +227,12 @@ namespace BoCode.RedoDB.Builder
         //deserialize and return T
         private async Task<T> RecoverRedoableAsync()
         {
-            if (_withNoPersistence) return new T();
+            if (_withNoPersistence) return _creator();
 
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
 
-            T recovered = await _snapshotAdapter.DeserializeAsync() ?? new T();
+            T recovered = await _snapshotAdapter.DeserializeAsync() ?? _creator();
 
             RecoverFromLogs(recovered);
 
@@ -261,12 +260,12 @@ namespace BoCode.RedoDB.Builder
 
         private T RecoverRedoable()
         {
-            if (_withCommandlogOnly || _withNoPersistence) return new T();
+            if (_withCommandlogOnly || _withNoPersistence) return _creator();
 
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
 
-            T recovered = _snapshotAdapter.Deserialize() ?? new T();
+            T recovered = _snapshotAdapter.Deserialize() ?? _creator();
 
             RecoverFromLogs(recovered);
 
