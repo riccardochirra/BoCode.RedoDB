@@ -13,13 +13,13 @@ namespace BoCode.RedoDB.Persistence.NoPersistence
             //do nothing, allways ready.
         }
 
-        public T? Deserialize()
+        public T Deserialize()
         {
             //nothing to serialize
             return default;
         }
 
-        public Task<T?> DeserializeAsync()
+        public Task<T> DeserializeAsync()
         {
             //do nothing.
 #pragma warning disable CS8603 // Possible null reference return.
@@ -32,7 +32,7 @@ namespace BoCode.RedoDB.Persistence.NoPersistence
             //nothing to dispose.
         }
 
-        public T? GetLastSnapshot()
+        public T GetLastSnapshot()
         {
             throw new NotImplementedException();
         }

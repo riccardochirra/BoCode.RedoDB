@@ -7,7 +7,7 @@ namespace BoCode.RedoDB.Persistence.NoPersistence
 {
     public class NoPersitenceCommandAdapter : ICommandAdapter
     {
-        public string? LastSnapshotName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string LastSnapshotName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public IEnumerable<Commandlog> RecoveringLogs => throw new NotImplementedException();
 

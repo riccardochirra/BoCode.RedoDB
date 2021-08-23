@@ -15,10 +15,10 @@ namespace BoCode.RedoDB.Persistence.Commands
         private DirectoryInfo _dataPath;
         private bool _withNoPersistence = false;
         private readonly ISnapshotOrLogNameProvider _nameProvider;
-        private FileStream? _fileStream = null;
-        private string? _lastCommandLog = null;
-        private List<Commandlog>? _recoveringLogs;
-        private string? _lastSnapshotName;
+        private FileStream _fileStream = null;
+        private string _lastCommandLog = null;
+        private List<Commandlog> _recoveringLogs;
+        private string _lastSnapshotName;
 
 
         public JsonCommandAdapter(DirectoryInfo dataPath, ISnapshotOrLogNameProvider nameProvider)
@@ -28,14 +28,14 @@ namespace BoCode.RedoDB.Persistence.Commands
         }
         public void WithJsonAdapters(string dataPath)
         {
-            _dataPath = new(dataPath);
+            _dataPath = new DirectoryInfo(dataPath);
         }
 
         public async Task WriteCommandAsync(Command command)
         {
             if (_fileStream is null) NextCommandLog();
 
-            if (_fileStream is not null)
+            if (_fileStream != null)
             {
                 await using var stream = new MemoryStream();
                 var serializer = new JsonSerializer();
@@ -101,7 +101,7 @@ namespace BoCode.RedoDB.Persistence.Commands
             _withNoPersistence = true;
         }
 
-        public string? LastCommandLog
+        public string LastCommandLog
         {
             get
             {
@@ -161,7 +161,7 @@ namespace BoCode.RedoDB.Persistence.Commands
             }
         }
 
-        public string? LastSnapshotName { get => _lastSnapshotName; set => _lastSnapshotName = value; }
+        public string LastSnapshotName { get => _lastSnapshotName; set => _lastSnapshotName = value; }
 
         private Commandlog ReadCommandlog(string commandlog)
         {
@@ -201,7 +201,7 @@ namespace BoCode.RedoDB.Persistence.Commands
             using StreamReader reader = new StreamReader(Path.Combine(_dataPath.FullName, commandlog));
             string data = reader.ReadToEnd();
             //string data = File.ReadAllText(Path.Combine(_dataPath.FullName, commandlog));
-            log = new(commandlog, data);
+            log = new Commandlog(commandlog, data);
             return new JsonCommandlogHelper(data).GetCommandJsons();
         }
 

@@ -13,7 +13,7 @@ namespace BoCode.RedoDB.Persistence.Commands
     {
         Task WriteCommandAsync(Command command);
         void CloseCommandLog();
-        string? LastSnapshotName { get; set; }
+        string LastSnapshotName { get; set; }
         IEnumerable<Commandlog> RecoveringLogs { get; }
     }
 }

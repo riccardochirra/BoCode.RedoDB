@@ -24,15 +24,15 @@ namespace BoCode.RedoDB.Builder
         where I : class
     {
         private IInterceptions _interceptions;
-        private ICommandAdapter? _commandAdapter;
-        private ISnapshotAdapter<T>? _snapshotAdapter;
+        private ICommandAdapter _commandAdapter;
+        private ISnapshotAdapter<T> _snapshotAdapter;
         private bool _withNoPersistence;
-        private string? _dataPath;
-        private IRedoableClock? _redoableClock = null;
-        private IRedoableGuid? _redoableGuid = null;
+        private string _dataPath;
+        private IRedoableClock _redoableClock = null;
+        private IRedoableGuid _redoableGuid = null;
         private bool _compensationActive = false;
-        private CompensationManager<T>? _compensationManager;
-        private List<Command> _recoveredCommands = new();
+        private CompensationManager<T> _compensationManager;
+        private List<Command> _recoveredCommands = new List<Command>();
         private bool _withCommandlogOnly = false;
 
         public List<Command> FaultyCommands { get; private set; } = new List<Command>();
@@ -158,18 +158,18 @@ namespace BoCode.RedoDB.Builder
         private DirectoryInfo GetPath()
         {
             if (_dataPath is null) throw new MissingBuilderConfigurationException(MissingBuilderConfigurationException.MISSING_DATA_PATH);
-            string? subdirectory = GetSubdirectory();
+            string subdirectory = GetSubdirectory();
             if (subdirectory is null)
                 return new DirectoryInfo(_dataPath);
             else
                 return new DirectoryInfo(Path.Combine(_dataPath, subdirectory));
         }
 
-        private string? GetSubdirectory()
+        private string GetSubdirectory()
         {
             var attribute = Attribute.GetCustomAttribute(typeof(T),
                 typeof(RedoSubdirectoryAttribute)) as RedoSubdirectoryAttribute;
-            if (attribute is not null)
+            if (attribute != null)
                 return attribute.Subdirectory;
             else
                 return null;
@@ -197,13 +197,13 @@ namespace BoCode.RedoDB.Builder
 
             if (recovered != null)
             {
-                if (recovered is not I) throw new RedoDBEngineException("System T does not implement interface I!");
+                if (!(recovered is I)) throw new RedoDBEngineException("System T does not implement interface I!");
                 redoable = new RedoDBEngine<T>(recovered, _snapshotAdapter, _commandAdapter).ActLike<I>(typeof(IRedoDBEngine<T>), typeof(IRedoEngineInternal<T>));
             }
             else
             {
-                T newInstance = new();
-                if (newInstance is not I) throw new RedoDBEngineException("System T does not implement interface I!");
+                T newInstance = new T();
+                if (!(newInstance is I)) throw new RedoDBEngineException("System T does not implement interface I!");
                 redoable = new RedoDBEngine<T>(newInstance, _snapshotAdapter, _commandAdapter).ActLike<I>(typeof(IRedoDBEngine<T>), typeof(IRedoEngineInternal<T>));
             }
             return redoable;
@@ -240,7 +240,7 @@ namespace BoCode.RedoDB.Builder
             return recovered;
         }
 
-        private void RecoverFromLogs(T? recovered)
+        private void RecoverFromLogs(T recovered)
         {
             HandleRedoableDependencies(recovered);
 
@@ -327,9 +327,9 @@ namespace BoCode.RedoDB.Builder
 
         private void PrepareRedoingData(Command command)
         {
-            if (command.CommandContext.TrackedGuids is not null && _redoableGuid is not null)
+            if (command.CommandContext.TrackedGuids != null && _redoableGuid != null)
                 _redoableGuid.Redoing(command.CommandContext.TrackedGuids);
-            if (command.CommandContext.TrackedTime is not null && _redoableClock is not null)
+            if (command.CommandContext.TrackedTime != null && _redoableClock != null)
                 _redoableClock.Redoing(command.CommandContext.TrackedTime);
         }
 

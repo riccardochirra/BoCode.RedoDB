@@ -17,14 +17,14 @@ namespace BoCode.RedoDB.Persistence.Snapshots
             _adapter = adapter;
         }
 
-        public string? LastSnapshot => _adapter?.LastSnapshot;
+        public string LastSnapshot => _adapter?.LastSnapshot;
 
         public void TakeSnapshot()
         {
             _adapter.Serialize(_redoable());
         }
 
-        public async Task<T?>? RecoverFromSnapshot()
+        public async Task<T> RecoverFromSnapshot()
         {
             return await _adapter.DeserializeAsync();
         }
@@ -34,7 +34,7 @@ namespace BoCode.RedoDB.Persistence.Snapshots
             _adapter.Dispose();
         }
 
-        public T? GetLastDeserialization()
+        public T GetLastDeserialization()
         {
             return _adapter.GetLastSnapshot();
         }

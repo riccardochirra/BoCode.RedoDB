@@ -6,7 +6,7 @@ namespace BoCode.RedoDB.RedoableData
 {
     public class RedoableData<T> : IRedoableData<T>
     {
-        List<T> _tracked = new();
+        List<T> _tracked = new List<T>();
         private bool _isRedoing;
         private Func<T> _generateMethod;
 
@@ -49,7 +49,7 @@ namespace BoCode.RedoDB.RedoableData
 
             if (_isRedoing)
             {
-                T? first = _tracked.FirstOrDefault();
+                T first = _tracked.FirstOrDefault();
                 if (first is null)
                 {
                     //no more tracked value, stop redoing and return a new value

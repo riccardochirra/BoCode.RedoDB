@@ -11,10 +11,10 @@ namespace BoCode.RedoDB.Persistence.Snapshots
     public interface ISnapshotAdapter<T> : IBuilderComponent, IDisposable
     {
         void Serialize(T redoable);
-        T? Deserialize();
-        Task<T?> DeserializeAsync();
-        T? GetLastSnapshot();
+        T Deserialize();
+        Task<T> DeserializeAsync();
+        T GetLastSnapshot();
 
-        string? LastSnapshot { get; }
+        string LastSnapshot { get; }
     }
 }

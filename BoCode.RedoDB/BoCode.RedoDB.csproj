@@ -1,19 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Authors>Riccardo Chirra</Authors>
-    <Description>BoCode.RedoDB is a .NET lilbrary providing automagical persistence for your object's state with almost no extra coding.</Description>
-    <Copyright>2023 Riccardo Chirra</Copyright>
-    <PackageProjectUrl>www.bocode.com</PackageProjectUrl>
-    <PackageIcon></PackageIcon>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/riccardochirra/BoCode.RedoDB.git</RepositoryUrl>
-    <PackageTags>persistence; in-memory-db; command-log; snapshot; object-graph; Riccardo Chirra</PackageTags>
-    <PackageReleaseNotes>BoCode.RedoDB Version 1.0.0.0. First publication</PackageReleaseNotes>
-    <ApplicationIcon></ApplicationIcon>
+	<TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

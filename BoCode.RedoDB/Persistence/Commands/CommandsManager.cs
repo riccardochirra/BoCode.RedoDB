@@ -16,7 +16,7 @@ namespace BoCode.RedoDB.Persistence.Commands
         List<Command> _processedCommands = new List<Command>();
 
         private ICommandAdapter _adapter;
-        private CompensationManager<T>? _compensationManager;
+        private CompensationManager<T> _compensationManager;
 
         public CommandsManager(ICommandAdapter adapter)
         {

@@ -25,11 +25,11 @@ namespace BoCode.RedoDB
         private ICommandsManager<T> _commands;
         private ISnapshotManager<T> _snapshotManager;
         private bool _noPersistence;
-        private IRedoableGuid? _redoableGuid;
-        private IRedoableClock? _redoableClock;
+        private IRedoableGuid _redoableGuid;
+        private IRedoableClock _redoableClock;
         private object _lock = new object();
         private bool _compensationActive;
-        private CompensationManager<T>? _compensationManager;
+        private CompensationManager<T> _compensationManager;
 
         public RedoDBEngine(T redoableObject, ISnapshotAdapter<T> snapshotAdapter, ICommandAdapter commandAdapter)
         {
@@ -75,7 +75,7 @@ namespace BoCode.RedoDB
             _snapshotManager.TakeSnapshot();
         }
 
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace BoCode.RedoDB
             }
             catch (TargetInvocationException ex)
             {
-                if (ex.InnerException is not null)
+                if (ex.InnerException != null)
                 {
                     DebugWrite(ex.InnerException.ToString());
                     throw ex.InnerException;
@@ -122,7 +122,7 @@ namespace BoCode.RedoDB
         }
 
 
-        private bool JustInvoke(InvokeMemberBinder binder, object?[]? args, ref object? result)
+        private bool JustInvoke(InvokeMemberBinder binder, object[] args, ref object result)
         {
             var methodInfo = _redoableObject.GetType().GetMethod(binder.Name);
 
@@ -133,7 +133,7 @@ namespace BoCode.RedoDB
             return true;
         }
 
-        private bool InterceptAndInvoke(InvokeMemberBinder binder, object?[]? args, ref object? result)
+        private bool InterceptAndInvoke(InvokeMemberBinder binder, object[] args, ref object result)
         {
             var methodInfo = _redoableObject.GetType().GetMethod(binder.Name);
 
@@ -148,9 +148,9 @@ namespace BoCode.RedoDB
                 catch { throw; }
                 finally
                 {
-                    (List<Guid>? guids, List<DateTime>? dateTimes) = GetTrackedData();
+                    (List<Guid> guids, List<DateTime> dateTimes) = GetTrackedData();
 
-                    Command command = new(CommandType.Method, binder.Name, args, new CommandContext(DateTime.Now, guids, dateTimes));
+                    Command command = new Command(CommandType.Method, binder.Name, args, new CommandContext(DateTime.Now, guids, dateTimes));
 
                     _commands.AddCommand(command);
                 }
@@ -159,7 +159,7 @@ namespace BoCode.RedoDB
             return true;
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object? result)
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             try
             {
@@ -185,7 +185,7 @@ namespace BoCode.RedoDB
             }
         }
 
-        private bool JustGet(GetMemberBinder binder, ref object? result)
+        private bool JustGet(GetMemberBinder binder, ref object result)
         {
             var propertyInfo = _redoableObject.GetType().GetProperty(binder.Name);
 
@@ -197,7 +197,7 @@ namespace BoCode.RedoDB
 
         }
 
-        private bool InterceptAndGet(GetMemberBinder binder, ref object? result)
+        private bool InterceptAndGet(GetMemberBinder binder, ref object result)
         {
             var propertyInfo = _redoableObject.GetType().GetProperty(binder.Name);
 
@@ -212,9 +212,9 @@ namespace BoCode.RedoDB
                 catch { throw; }
                 finally
                 {
-                    (List<Guid>? guids, List<DateTime>? dateTimes) = GetTrackedData();
+                    (List<Guid> guids, List<DateTime> dateTimes) = GetTrackedData();
 
-                    Command command = new(CommandType.Getter, binder.Name, null, new CommandContext(DateTime.Now, guids, dateTimes));
+                    Command command = new Command(CommandType.Getter, binder.Name, null, new CommandContext(DateTime.Now, guids, dateTimes));
 
                     _commands.AddCommand(command);
                 }
@@ -223,7 +223,7 @@ namespace BoCode.RedoDB
             return true;
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object? value)
+        public override bool TrySetMember(SetMemberBinder binder, object value)
         {
             try
             {
@@ -247,7 +247,7 @@ namespace BoCode.RedoDB
             }
         }
 
-        private bool JustSet(SetMemberBinder binder, object? value)
+        private bool JustSet(SetMemberBinder binder, object value)
         {
             var propertyInfo = _redoableObject.GetType().GetProperty(binder.Name);
 
@@ -258,7 +258,7 @@ namespace BoCode.RedoDB
             return true;
         }
 
-        private bool InterceptAndSet(SetMemberBinder binder, object? value)
+        private bool InterceptAndSet(SetMemberBinder binder, object value)
         {
             var propertyInfo = _redoableObject.GetType().GetProperty(binder.Name);
 
@@ -273,9 +273,9 @@ namespace BoCode.RedoDB
                 catch { throw; }
                 finally
                 {
-                    (List<Guid>? guids, List<DateTime>? dateTimes) = GetTrackedData();
+                    (List<Guid> guids, List<DateTime> dateTimes) = GetTrackedData();
 
-                    Command command = new(CommandType.Setter, binder.Name, new object?[] { value }, new CommandContext(DateTime.Now, guids, dateTimes));
+                    Command command = new Command(CommandType.Setter, binder.Name, new object[] { value }, new CommandContext(DateTime.Now, guids, dateTimes));
 
                     _commands.AddCommand(command);
                 }
@@ -284,7 +284,7 @@ namespace BoCode.RedoDB
             return true;
         }
 
-        private (List<Guid>? guids, List<DateTime>? dateTimes) GetTrackedData()
+        private (List<Guid> guids, List<DateTime> dateTimes) GetTrackedData()
         {
             var result = (_redoableGuid?.Tracked.ToList(), _redoableClock?.Tracked.ToList());
             _redoableGuid?.ClearTracking();

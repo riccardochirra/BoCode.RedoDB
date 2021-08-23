@@ -17,7 +17,7 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         private DirectoryInfo _dataPath;
         private bool _withNoPersistence = false;
         private readonly ISnapshotOrLogNameProvider _nameProvider;
-        private MemoryStream? _lastSnapshot = null;
+        private MemoryStream _lastSnapshot = null;
 
         public JsonSnapshotAdapter(DirectoryInfo dataPath, ISnapshotOrLogNameProvider nameProvider)
         {
@@ -26,21 +26,21 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         }
 
 
-        public async Task<T?> DeserializeAsync()
+        public async Task<T> DeserializeAsync()
         {
             return await Task.Run(() => Deserialize());
         }
 
 
-        public T? Deserialize()
+        public T Deserialize()
         {
             var lastSnapshot = LastSnapshot;
-            T? redoable = default(T);
+            T redoable = default(T);
 
-            if (lastSnapshot is not null)
+            if (lastSnapshot != null)
             {
                 //read the file into the memorystream
-                MemoryStream memoryStream = new();
+                MemoryStream memoryStream = new MemoryStream();
 
                 using Stream input = File.OpenRead(lastSnapshot);
                 input.CopyTo(memoryStream);
@@ -61,11 +61,11 @@ namespace BoCode.RedoDB.Persistence.Snapshots
             return redoable;
         }
 
-        public T? GetLastSnapshot()
+        public T GetLastSnapshot()
         {
-            if (_lastSnapshot is not null)
+            if (_lastSnapshot != null)
             {
-                T? redoable = default(T);
+                T redoable = default(T);
                 _lastSnapshot.Seek(0, SeekOrigin.Begin);
                 using var streamReader = new StreamReader(_lastSnapshot);
                 using JsonReader reader = new JsonTextReader(streamReader);
@@ -84,8 +84,8 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         {
             get
             {
-                string? lastSnapshot = LastSnapshot;
-                string? lastCommandlog = LastCommandlog;
+                string lastSnapshot = LastSnapshot;
+                string lastCommandlog = LastCommandlog;
                 return GetSnapshotName(lastSnapshot, lastCommandlog);
             }
         }
@@ -98,12 +98,12 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         /// <param name="lastSnapshot"></param>
         /// <param name="lastCommandlog"></param>
         /// <returns></returns>
-        private string GetSnapshotName(string? lastSnapshot, string? lastCommandlog)
+        private string GetSnapshotName(string lastSnapshot, string lastCommandlog)
         {
             long lastSnapshotOrdinal = 0;
-            if (lastSnapshot is not null) lastSnapshotOrdinal = long.Parse(new FileInfo(lastSnapshot).Name.Split('.').First());
+            if (lastSnapshot != null) lastSnapshotOrdinal = long.Parse(new FileInfo(lastSnapshot).Name.Split('.').First());
             long lastCommandlogOrdinal = 0;
-            if (lastCommandlog is not null) lastCommandlogOrdinal = long.Parse(new FileInfo(lastCommandlog).Name.Split('.').First());
+            if (lastCommandlog != null) lastCommandlogOrdinal = long.Parse(new FileInfo(lastCommandlog).Name.Split('.').First());
 
             if (lastCommandlogOrdinal > lastSnapshotOrdinal)
             {
@@ -119,7 +119,7 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         /// <summary>
         /// Returns null if no commandlog can be found, otherwise it returns the one with the highest ordinal.
         /// </summary>
-        private string? LastCommandlog
+        private string LastCommandlog
         {
             get
             {
@@ -190,7 +190,7 @@ namespace BoCode.RedoDB.Persistence.Snapshots
 
         public void WithJsonAdapters(string dataPath)
         {
-            _dataPath = new(dataPath);
+            _dataPath = new DirectoryInfo(dataPath);
         }
 
         public void NoPersistence()
@@ -207,7 +207,7 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         /// returns null if no snapshot can be found, 
         /// otherwise returns the snapshot fullname with the highest ordinal
         /// </summary>
-        public string? LastSnapshot
+        public string LastSnapshot
         {
             get
             {

@@ -9,9 +9,9 @@ namespace BoCode.RedoDB.Interception
     /// </summary>
     public class InterceptionsManager : IInterceptions, IBuilderComponent
     {
-        List<string> _namesOfMehtodsOrSetterToBeIntercepted = new();
-        List<string> _startingSubstringsCausingExclusion = new();
-        List<string> _namesOfGetterToBeIntercepted = new();
+        List<string> _namesOfMehtodsOrSetterToBeIntercepted = new List<string>();
+        List<string> _startingSubstringsCausingExclusion = new List<string>();
+        List<string> _namesOfGetterToBeIntercepted = new List<string>();
 
         public void AddInterception(string methodName)
         {

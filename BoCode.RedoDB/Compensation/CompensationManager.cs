@@ -13,11 +13,11 @@ namespace BoCode.RedoDB.Compensation
     /// </summary>
     public class CompensationManager<T> where T : class, new()
     {
-        List<Command> _faultyCommands = new();
+        List<Command> _faultyCommands = new List<Command>();
 
-        private ISnapshotAdapter<T>? _snapshotAdapter;
-        private IRedoableGuid? _redoableGuid;
-        private IRedoableClock? _redoableClock;
+        private ISnapshotAdapter<T> _snapshotAdapter;
+        private IRedoableGuid _redoableGuid;
+        private IRedoableClock _redoableClock;
 
         public CompensationManager()
         {
@@ -56,13 +56,13 @@ namespace BoCode.RedoDB.Compensation
 
         private void PrepareRedoingData(Command command)
         {
-            if (command.CommandContext.TrackedGuids is not null && _redoableGuid is not null)
+            if (command.CommandContext.TrackedGuids != null && _redoableGuid != null)
                 _redoableGuid.Redoing(command.CommandContext.TrackedGuids);
-            if (command.CommandContext.TrackedTime is not null && _redoableClock is not null)
+            if (command.CommandContext.TrackedTime != null && _redoableClock != null)
                 _redoableClock.Redoing(command.CommandContext.TrackedTime);
         }
 
-        internal void SetRedoableData(IRedoableGuid? redoableGuid, IRedoableClock? redoableClock)
+        internal void SetRedoableData(IRedoableGuid redoableGuid, IRedoableClock redoableClock)
         {
             _redoableGuid = redoableGuid;
             _redoableClock = redoableClock;
@@ -77,7 +77,7 @@ namespace BoCode.RedoDB.Compensation
                     break;
                 case CommandType.Getter:
                     var getter = recovered.GetType().GetProperty(command.MemberName);
-                    if (getter is not null)
+                    if (getter != null)
                         getter.GetGetMethod()?.Invoke(recovered, null);
                     break;
                 case CommandType.Setter:
@@ -90,20 +90,20 @@ namespace BoCode.RedoDB.Compensation
         {
             var method = recovered.GetType().GetMethod(command.MemberName);
             var parameters = method?.GetParameters();
-            if (parameters is not null)
+            if (parameters != null)
             {
-                object?[] args = new object[parameters.Length];
+                object[] args = new object[parameters.Length];
                 int i = 0;
                 foreach (var p in parameters)
                 {
-                    object? value = null;
-                    if (command.Args is not null)
+                    object value = null;
+                    if (command.Args != null)
                     {
                         value = command.Args[i];
                     }
                     if (p.ParameterType == typeof(int))
                     {
-                        if (command.Args is not null)
+                        if (command.Args != null)
                         {
                             Int64 value64 = (Int64)(command.Args.ElementAt(i) ?? 0);
                             value = Int32.Parse(value64.ToString());
@@ -112,21 +112,21 @@ namespace BoCode.RedoDB.Compensation
                     args[i] = value;
                     i++;
                 }
-                if (method is not null) method.Invoke(recovered, args);
+                if (method != null) method.Invoke(recovered, args);
             }
             else
-                if (method is not null) method.Invoke(recovered, command.Args);
+                if (method != null) method.Invoke(recovered, command.Args);
         }
 
         private static void RedoSetter(T recovered, Command command)
         {
             var setter = recovered.GetType().GetProperty(command.MemberName);
-            if (setter is not null)
+            if (setter != null)
             {
                 if (setter.PropertyType == typeof(int))
                 {
                     Int32 value = 0;
-                    if (command.Args is not null)
+                    if (command.Args != null)
                     {
                         value = Convert.ToInt32(command.Args.FirstOrDefault());
                     }
