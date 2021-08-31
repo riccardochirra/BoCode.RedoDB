@@ -3,7 +3,7 @@
     /// <summary>
     /// Components of the RedoDBEngine are prepared inside the builder. 
     /// With this interfacer we enable the builder to interact with the 
-    /// compnent.
+    /// component.
     /// </summary>
     public interface IBuilderComponent
     {
@@ -15,7 +15,7 @@
         public void AssertBuildReady();
         /// <summary>
         /// If on the builder WithNoPersitence is selected, each component of the engine
-        /// get informed about this configuraton. Components may react to this configuration
+        /// get informed about this configuration. Components may react to this configuration
         /// in different ways when calling method like "TakeSnapshot" clearly requiring persistence
         /// </summary>
         public void NoPersistence();

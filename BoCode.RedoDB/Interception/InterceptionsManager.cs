@@ -32,7 +32,7 @@ namespace BoCode.RedoDB.Interception
         private void AssertAmbiguitiesBetweenInclusionsAndExclusions()
         {
             if (ThereAreAmbiguitiesBetweenInclusionsAndExclusions())
-                throw new MissingBuilderConfigurationException("Please review your configuration of interceptions: inclusions and exclusions of method cause abmbiguity and the interception manager can't resolve it.");
+                throw new RedoDBEngineBuilderException("Please review your configuration of interceptions: inclusions and exclusions of method cause abmbiguity and the interception manager can't resolve it.");
         }
 
         private bool ThereAreAmbiguitiesBetweenInclusionsAndExclusions()

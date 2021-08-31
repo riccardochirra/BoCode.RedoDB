@@ -8,11 +8,11 @@ namespace BoCode.RedoDB.Builder
     /// userd to complete configuration. Those methods normally begins with "With".
     /// </summary>
     [Serializable]
-    public class MissingBuilderConfigurationException : Exception
+    public class RedoDBEngineBuilderException : Exception
     {
-        public MissingBuilderConfigurationException() { }
-        public MissingBuilderConfigurationException(string message) : base(message) { }
-        public MissingBuilderConfigurationException(string message, Exception inner) : base(message, inner) { }
+        public RedoDBEngineBuilderException() { }
+        public RedoDBEngineBuilderException(string message) : base(message) { }
+        public RedoDBEngineBuilderException(string message, Exception inner) : base(message, inner) { }
 
         public const string MISSING_DATA_PATH = "Builder tries to use built in Json adapters for commands and snapshot, but the data path for the files is not configured. Use the builder method WithDataPath before build!";
     }

@@ -6,7 +6,7 @@ using BoCode.RedoDB.Interception;
 
 namespace BoCode.RedoDB
 {
-    public interface IRedoDBEngine<T> : IDisposable where T : class, new()
+    public interface IRedoDBEngine<T> : IDisposable where T : class
     {
         ICommandsManager<T> Commands { get; }
         IInterceptions Instructions { get; }
@@ -14,7 +14,7 @@ namespace BoCode.RedoDB
         void TakeSnapshot();
     }
 
-    public interface IRedoEngineInternal<T> where T : class, new()
+    public interface IRedoEngineInternal<T> where T : class
     {
         void SetCommandsManager(ICommandsManager<T> commandManager);
         void SetInterceptionsManager(IInterceptions interceptionsManager);

@@ -185,7 +185,7 @@ namespace BoCode.RedoDB.Persistence.Snapshots
         {
             if (_withNoPersistence) return;
             if (_dataPath == null)
-                throw new MissingBuilderConfigurationException("JsonSnapshotAdapter needs a data path. Use the builder WithDataPath method do configure it before build.");
+                throw new RedoDBEngineBuilderException("JsonSnapshotAdapter needs a data path. Use the builder WithDataPath method do configure it before build.");
         }
 
         public void WithJsonAdapters(string dataPath)
