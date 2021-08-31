@@ -11,16 +11,18 @@ namespace BoCode.RedoDB.Compensation
     /// <summary>
     /// This class support compensation in case of faulty command.
     /// </summary>
-    public class CompensationManager<T> where T : class, new()
+    public class CompensationManager<T> where T : class
     {
         List<Command> _faultyCommands = new();
 
         private ISnapshotAdapter<T>? _snapshotAdapter;
         private IRedoableGuid? _redoableGuid;
         private IRedoableClock? _redoableClock;
+        private readonly Func<T> _creator;
 
-        public CompensationManager()
+        public CompensationManager(Func<T> creator)
         {
+            _creator = creator;
         }
 
         public IEnumerable<Command> FaultyCommands => _faultyCommands;
@@ -35,7 +37,7 @@ namespace BoCode.RedoDB.Compensation
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
             _faultyCommands.Add(faultyCommand);
             
-            T compensated = _snapshotAdapter.GetLastSnapshot() ?? new T();
+            T compensated = _snapshotAdapter.GetLastSnapshot() ?? _creator();
             
             int i = 0;
             var command = log[0];

@@ -1,5 +1,4 @@
 ﻿using BoCode.RedoDB.Compensation;
-using System.Collections.Generic;
 
 namespace BoCode.RedoDB.Persistence.Commands
 {
@@ -8,7 +7,7 @@ namespace BoCode.RedoDB.Persistence.Commands
     /// the configured command log immediately. When a snapshot is taken, the CommandManager closes log (the internal list of 
     /// commands is cleared) and a new log is started.
     /// </summary>
-    public class CommandsManager<T> : ICommandsManager<T> where T : class, new()
+    public class CommandsManager<T> : ICommandsManager<T> where T : class
     {
         //reflects the current log.
         List<Command> _commands = new List<Command>();

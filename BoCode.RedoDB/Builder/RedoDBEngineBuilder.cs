@@ -20,10 +20,11 @@ namespace BoCode.RedoDB.Builder
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="I"></typeparam>
     public class RedoDBEngineBuilder<T, I> : IWithDataPath
-        where T : class, new()
+        where T : class
         where I : class
     {
         private IInterceptions _interceptions;
+        private readonly Func<T> _creator;
         private ICommandAdapter? _commandAdapter;
         private ISnapshotAdapter<T>? _snapshotAdapter;
         private bool _withNoPersistence;
@@ -40,9 +41,10 @@ namespace BoCode.RedoDB.Builder
         /// <summary>
         /// The parameterless constructor uses and empty InterceptInstructions and the default CommandManagager. 
         /// </summary>
-        public RedoDBEngineBuilder()
+        public RedoDBEngineBuilder(Func<T> creator = null)
         {
             _interceptions = new InterceptionsManager();
+            _creator = creator ?? Activator.CreateInstance<T>;
         }
 
         public RedoDBEngineBuilder(IInterceptions interceptionManager)
@@ -150,7 +152,7 @@ namespace BoCode.RedoDB.Builder
             }
             if (_compensationActive)
             {
-                _compensationManager = new CompensationManager<T>();
+                _compensationManager = new CompensationManager<T>(_creator);
                 _compensationManager.SetSnapshotAdapter(_snapshotAdapter);
             }
         }
@@ -202,7 +204,7 @@ namespace BoCode.RedoDB.Builder
             }
             else
             {
-                T newInstance = new();
+                T newInstance = _creator();
                 if (newInstance is not I) throw new RedoDBEngineException("System T does not implement interface I!");
                 redoable = new RedoDBEngine<T>(newInstance, _snapshotAdapter, _commandAdapter).ActLike<I>(typeof(IRedoDBEngine<T>), typeof(IRedoEngineInternal<T>));
             }
@@ -228,12 +230,12 @@ namespace BoCode.RedoDB.Builder
         //deserialize and return T
         private async Task<T> RecoverRedoableAsync()
         {
-            if (_withNoPersistence) return new T();
+            if (_withNoPersistence) return _creator();
 
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
 
-            T recovered = await _snapshotAdapter.DeserializeAsync() ?? new T();
+            T recovered = await _snapshotAdapter.DeserializeAsync() ?? _creator();
 
             RecoverFromLogs(recovered);
 
@@ -261,12 +263,12 @@ namespace BoCode.RedoDB.Builder
 
         private T RecoverRedoable()
         {
-            if (_withCommandlogOnly || _withNoPersistence) return new T();
+            if (_withCommandlogOnly || _withNoPersistence) return _creator();
 
             if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
             if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
 
-            T recovered = _snapshotAdapter.Deserialize() ?? new T();
+            T recovered = _snapshotAdapter.Deserialize() ?? _creator();
 
             RecoverFromLogs(recovered);
 
@@ -337,15 +339,22 @@ namespace BoCode.RedoDB.Builder
         /// This method of the builder configures RedoDb to use built-in json adapters persisting commands and snapshot in the given directory (data path).
         /// </summary>
         /// <param name="dataPath"></param>
-        public void WithJsonAdapters(string dataPath)
+        public RedoDBEngineBuilder<T, I> WithJsonAdapters(string dataPath)
         {
             _dataPath = dataPath;
+            return this;
         }
 
-        public void WithCommandlogOnly()
+        public RedoDBEngineBuilder<T, I> WithCommandlogOnly()
         {
             if (_withNoPersistence) throw new RedoDBEngineException("The WithCommandlogOnly option can't be used together with WithNoPersistence!");
             _withCommandlogOnly = true;
+            return this;
+        }
+
+        void IWithDataPath.WithJsonAdapters(string dataPath)
+        {
+            _dataPath = dataPath;
         }
     }
 }
