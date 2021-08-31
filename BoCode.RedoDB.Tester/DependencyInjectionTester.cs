@@ -48,7 +48,7 @@ namespace BoCode.RedoDB.Tester
 
             serviceCollection.AddSingleton<IDependencyOfSystem>(new Writer());
 
-            serviceCollection.AddRedoDB<ISystem, SystemWithDependency>(builder =>
+            serviceCollection.AddRedoDB<ISystem, SystemWithDependency>(ServiceLifetime.Singleton, builder =>
                 builder.WithCommandlogOnly(new JsonCommandAdapter(new DirectoryInfo(dataPath), new CommandlogNameProvider()))
                     .Build()
                 ); 
