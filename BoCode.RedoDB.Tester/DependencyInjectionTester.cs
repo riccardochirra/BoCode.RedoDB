@@ -68,12 +68,12 @@ namespace BoCode.RedoDB.Tester
             _serviceProvider = fixture.Services(NewDataPath);
         }
 
-        [Fact(DisplayName="The redoable system has dependencies and can be constructed using DI.")]
+        [Fact(DisplayName="The redoable system has dependencies and can be constructed using DI. Interception works.")]
         public void Test1()
         {
             ISystem sut = _serviceProvider.GetService<ISystem>();
             sut.Do();
-            RedoDBEngine<SystemWithDependency>.GetEngine<ISystem>(sut).Commands.Log.Count().Should().Be(1);
+            RedoDBEngine<SystemWithDependency>.GetEngine<ISystem>(sut).Commands.Log.Single().MemberName.Should().Be("Do");
         }
     }
 }
