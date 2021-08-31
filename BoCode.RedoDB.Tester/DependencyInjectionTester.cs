@@ -1,23 +1,43 @@
 ﻿using BoCode.RedoDB.Builder;
 using BoCode.RedoDB.DependencyInjection;
+using BoCode.RedoDB.Persistence.Commands;
 using BoCode.RedoDB.Tester.Infrastructure;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace BoCode.RedoDB.Tester
 {
-    public interface IDependency
+    public interface ISystem
     {
         void Do();
     }
 
-    public class TestDependency : IDependency
+    public interface IDependencyOfSystem
     {
-        public void Do() { Console.WriteLine("Done."); }
+        public void Write();
+    }
+
+    public class Writer : IDependencyOfSystem
+    {
+        public void Write()
+        {
+            Console.WriteLine("Done.");
+        }
+    }
+
+    public class SystemWithDependency : ISystem
+    {
+        private readonly IDependencyOfSystem _writer = null;
+        public SystemWithDependency(IDependencyOfSystem writer)
+        {
+            _writer = writer;
+        }
+        public void Do() { _writer.Write(); }
     }
 
     public class DIFixture 
@@ -26,9 +46,10 @@ namespace BoCode.RedoDB.Tester
         {
             IServiceCollection serviceCollection = new ServiceCollection();
 
-            serviceCollection.AddRedoDB<IDependency, TestDependency>(builder =>
-                builder.WithJsonAdapters(dataPath)
-                    .WithCommandlogOnly()
+            serviceCollection.AddSingleton<IDependencyOfSystem>(new Writer());
+
+            serviceCollection.AddRedoDB<ISystem, SystemWithDependency>(builder =>
+                builder.WithCommandlogOnly(new JsonCommandAdapter(new DirectoryInfo(dataPath), new CommandlogNameProvider()))
                     .Build()
                 ); 
 
@@ -50,9 +71,9 @@ namespace BoCode.RedoDB.Tester
         [Fact(DisplayName="The redoable system has dependencies and can be constructed using DI.")]
         public void Test1()
         {
-            IDependency sut = _serviceProvider.GetService<IDependency>();
+            ISystem sut = _serviceProvider.GetService<ISystem>();
             sut.Do();
-            RedoDBEngine<TestDependency>.GetEngine<IDependency>(sut).Commands.Log.Count().Should().Be(1);
+            RedoDBEngine<SystemWithDependency>.GetEngine<ISystem>(sut).Commands.Log.Count().Should().Be(1);
         }
     }
 }

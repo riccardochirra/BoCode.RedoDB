@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using BoCode.RedoDB.Compensation;
+﻿using BoCode.RedoDB.Compensation;
 using BoCode.RedoDB.Interception;
 using BoCode.RedoDB.Persistence;
 using BoCode.RedoDB.Persistence.Commands;
@@ -35,6 +30,7 @@ namespace BoCode.RedoDB.Builder
         private CompensationManager<T>? _compensationManager;
         private List<Command> _recoveredCommands = new();
         private bool _withCommandlogOnly = false;
+        private bool _withJsonAdapters;
 
         public List<Command> FaultyCommands { get; private set; } = new List<Command>();
 
@@ -83,7 +79,7 @@ namespace BoCode.RedoDB.Builder
         /// <summary>
         /// By default all methods of a redoable class are intercepted, so that RedoEngine can log the call and redo if state 
         /// of the class must be restored. If you start using the Intercept method in the builder, the RedoEngine switches to a
-        /// restricted mode where only selected methods get logged. This is usefull to speed up restore time. You should intercept
+        /// restricted mode where only selected methods get logged. This is useful to speed up restore time. You should intercept
         /// all methods that change the state hold by the class. Methods that just retrieve data without changing the state do not need
         /// to be intercepted. An alternative is to mark the method using the RedoableAttribute. If you use the RedoableAttribute, you 
         /// should not use the Intercept method in the builder and let RedoEngine select what to intercept based on the RedoableAttribute.
@@ -109,7 +105,7 @@ namespace BoCode.RedoDB.Builder
         }
 
         /// <summary>
-        /// returns the constructed RedoEngine acting as the Interface you provide in the generic type I. Internally RedoEngine refererences
+        /// returns the constructed RedoEngine acting as the Interface you provide in the generic type I. Internally RedoEngine references
         /// the class T implementing I and calls the methods of T after having logged the call. This allows RedoEngine to restore the state of T 
         /// if needed.
         /// </summary>
@@ -138,28 +134,59 @@ namespace BoCode.RedoDB.Builder
         {
             if (_withNoPersistence)
             {
-                _commandAdapter = new NoPersitenceCommandAdapter();
-                _snapshotAdapter = new NoPersistenceSnapshotAdapter<T>();
+                CreateNoPersistenceAdapters();
             }
             else
             {
-                DirectoryInfo path = GetPath();
-                _commandAdapter = new JsonCommandAdapter(path, new CommandlogNameProvider());
-                if (_withCommandlogOnly)
-                    _snapshotAdapter = new NoPersistenceSnapshotAdapter<T>();   
+                if (_withJsonAdapters)
+                {
+                    //use built-in json adapters
+                    CreateJsonAdapters();
+                }
                 else
-                    _snapshotAdapter = new JsonSnapshotAdapter<T>(path, new SnapshotNameProvider());
+                {
+                    //user injected data adapters
+                    EnsureAdapters();
+                }
             }
             if (_compensationActive)
             {
-                _compensationManager = new CompensationManager<T>(_creator);
-                _compensationManager.SetSnapshotAdapter(_snapshotAdapter);
+                ActivateCompensationManager();
             }
+        }
+
+        private void ActivateCompensationManager()
+        {
+            if (_withCommandlogOnly) throw new RedoDBEngineBuilderException("Compensation requires a snapshot adapter and is not compatible with the option 'WithCommandlogOnly'!");
+            _compensationManager = new CompensationManager<T>(_creator);
+            _compensationManager.SetSnapshotAdapter(_snapshotAdapter);
+        }
+
+        private void CreateNoPersistenceAdapters()
+        {
+            _commandAdapter = new NoPersitenceCommandAdapter();
+            _snapshotAdapter = new NoPersistenceSnapshotAdapter<T>();
+        }
+
+        private void CreateJsonAdapters()
+        {
+            DirectoryInfo path = GetPath();
+            _commandAdapter = new JsonCommandAdapter(path, new CommandlogNameProvider());
+            if (_withCommandlogOnly)
+                _snapshotAdapter = new NoPersistenceSnapshotAdapter<T>();
+            else
+                _snapshotAdapter = new JsonSnapshotAdapter<T>(path, new SnapshotNameProvider());
+        }
+
+        private void EnsureAdapters()
+        {
+            if (_commandAdapter is null) throw new RedoDBEngineBuilderException("No command adapter was configured, but is required!");
+            if (_snapshotAdapter is null && _withCommandlogOnly == false) new RedoDBEngineBuilderException("No snapshot adapter is configured, but is required!");
         }
 
         private DirectoryInfo GetPath()
         {
-            if (_dataPath is null) throw new MissingBuilderConfigurationException(MissingBuilderConfigurationException.MISSING_DATA_PATH);
+            if (_dataPath is null) throw new RedoDBEngineBuilderException(RedoDBEngineBuilderException.MISSING_DATA_PATH);
             string? subdirectory = GetSubdirectory();
             if (subdirectory is null)
                 return new DirectoryInfo(_dataPath);
@@ -341,6 +368,7 @@ namespace BoCode.RedoDB.Builder
         /// <param name="dataPath"></param>
         public RedoDBEngineBuilder<T, I> WithJsonAdapters(string dataPath)
         {
+            _withJsonAdapters = true;
             _dataPath = dataPath;
             return this;
         }
@@ -349,6 +377,14 @@ namespace BoCode.RedoDB.Builder
         {
             if (_withNoPersistence) throw new RedoDBEngineException("The WithCommandlogOnly option can't be used together with WithNoPersistence!");
             _withCommandlogOnly = true;
+            return this;
+        }
+
+        public RedoDBEngineBuilder<T, I> WithCommandlogOnly(ICommandAdapter adapter)
+        {
+            WithCommandlogOnly();
+            _commandAdapter = adapter;
+            _snapshotAdapter = new NoPersistenceSnapshotAdapter<T>();
             return this;
         }
 

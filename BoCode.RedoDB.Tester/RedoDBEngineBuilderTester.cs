@@ -18,7 +18,7 @@ namespace BoCode.RedoDB.Tester
             RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new();
             //ACT, ASSERT
             Func<Task> action = async () => await builder.BuildAsync();
-            action.Should().ThrowAsync<MissingBuilderConfigurationException>()
+            action.Should().ThrowAsync<RedoDBEngineBuilderException>()
                 .WithMessage("JsonCommandAdapter needs a data path. Use the builder WithDataPath method do configure it before build.");
         }
 
@@ -33,7 +33,7 @@ namespace BoCode.RedoDB.Tester
             builder.WithNoPersistence();
             //ACT, ASSERT
             Func<Task> build = async () => contacts = await builder.BuildAsync();
-            build.Should().NotThrowAsync<MissingBuilderConfigurationException>();
+            build.Should().NotThrowAsync<RedoDBEngineBuilderException>();
 
             Action takeSnapshot = () => RedoDBEngine<ContactsSystem>.GetEngine(contacts).TakeSnapshot();
             takeSnapshot.Should().Throw<RedoDBEngineException>()

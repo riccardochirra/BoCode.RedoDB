@@ -93,7 +93,7 @@ namespace BoCode.RedoDB.Persistence.Commands
         {
             if (_withNoPersistence) return;
             if (_dataPath == null)
-                throw new MissingBuilderConfigurationException("JsonCommandAdapter needs a data path. Use the builder WithDataPath method do configure it before build.");
+                throw new RedoDBEngineBuilderException("JsonCommandAdapter needs a data path. Use the builder WithDataPath method do configure it before build.");
         }
 
         public void NoPersistence()

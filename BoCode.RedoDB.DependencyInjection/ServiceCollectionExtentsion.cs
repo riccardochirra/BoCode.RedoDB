@@ -6,7 +6,9 @@ namespace BoCode.RedoDB.DependencyInjection;
 
 public static class ServiceCollectionExtentsion
 {
-    public static IServiceCollection AddRedoDB<I, T>(this IServiceCollection collection, Func<RedoDBEngineBuilder<T,I>, I> func) where T : class where I : class
+    public static IServiceCollection AddRedoDB<I, T>(this IServiceCollection collection, Func<RedoDBEngineBuilder<T,I>, I> func) 
+        where T : class 
+        where I : class
     {
         if (collection is null)
         {
@@ -20,9 +22,8 @@ public static class ServiceCollectionExtentsion
 
         collection.AddSingleton<T>();
         
-        collection.AddSingleton(serviceProvider => func(new RedoDBEngineBuilder<T, I>(serviceProvider.GetRequiredService<T>)));
+        collection.AddSingleton<I>(serviceProvider => func(new RedoDBEngineBuilder<T, I>(serviceProvider.GetRequiredService<T>)));
 
         return collection;
-
     }
 }
