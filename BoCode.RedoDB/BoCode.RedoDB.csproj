@@ -11,9 +11,12 @@
     <PackageIcon></PackageIcon>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/riccardochirra/BoCode.RedoDB.git</RepositoryUrl>
+    <PackageVersion>1.0.1</PackageVersion>
     <PackageTags>persistence; in-memory-db; command-log; snapshot; object-graph; Riccardo Chirra</PackageTags>
-    <PackageReleaseNotes>BoCode.RedoDB Version 1.0.0.0. First publication</PackageReleaseNotes>
+    <PackageReleaseNotes>BoCode.RedoDB Version 1.0.1.0. This version supports the "Commandlog-only" feature and dependency injection.</PackageReleaseNotes>
     <ApplicationIcon></ApplicationIcon>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
