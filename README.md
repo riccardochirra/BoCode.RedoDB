@@ -10,7 +10,7 @@ Instead of constructing the system directly using the constructor of the system'
 
 ```c#
 RedoDBEngineBuilder<ContactsSystem, IContactsSystem> builder = new();
-builder.WithJsonAdapters("c:\data");
+builder.WithJsonAdapters("c:\\data");
 IContactsSystem contacts = builder.Build();
 ```
 
