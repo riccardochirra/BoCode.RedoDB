@@ -6,6 +6,11 @@ using BoCode.RedoDB.Persistence.NoPersistence;
 using BoCode.RedoDB.Persistence.Snapshots;
 using BoCode.RedoDB.RedoableData;
 using ImpromptuInterface;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BoCode.RedoDB.Builder
 {
@@ -19,7 +24,7 @@ namespace BoCode.RedoDB.Builder
         where I : class
     {
         private IInterceptions _interceptions;
-        private readonly Func<T> _creator;
+        private readonly Func<T>? _creator;
         private ICommandAdapter? _commandAdapter;
         private ISnapshotAdapter<T>? _snapshotAdapter;
         private bool _withNoPersistence;
@@ -37,16 +42,13 @@ namespace BoCode.RedoDB.Builder
         /// <summary>
         /// The parameterless constructor uses and empty InterceptInstructions and the default CommandManagager. 
         /// </summary>
-        public RedoDBEngineBuilder(Func<T> creator = null)
+        public RedoDBEngineBuilder(Func<T>? creator = null)
         {
             _interceptions = new InterceptionsManager();
             _creator = creator ?? Activator.CreateInstance<T>;
         }
 
-        public RedoDBEngineBuilder(IInterceptions interceptionManager)
-        {
-            _interceptions = interceptionManager;
-        }
+        public RedoDBEngineBuilder(IInterceptions interceptionManager) => _interceptions = interceptionManager;
 
         public RedoDBEngineBuilder<T, I> WithNoPersistence()
         {
@@ -158,8 +160,24 @@ namespace BoCode.RedoDB.Builder
         private void ActivateCompensationManager()
         {
             if (_withCommandlogOnly) throw new RedoDBEngineBuilderException("Compensation requires a snapshot adapter and is not compatible with the option 'WithCommandlogOnly'!");
-            _compensationManager = new CompensationManager<T>(_creator);
-            _compensationManager.SetSnapshotAdapter(_snapshotAdapter);
+            if (_creator is null)
+            {
+                throw new RedoDBEngineBuilderException("Creator can't be null while activating compensation manager!");
+            }
+            else
+            {
+                _compensationManager = new CompensationManager<T>(_creator);
+            }
+            if (_snapshotAdapter is null)
+            {
+
+                throw new RedoDBEngineBuilderException("Snapshot Adapter can't be null while actiating compensation manager!");
+            }
+
+            else
+            {
+                _compensationManager.SetSnapshotAdapter(_snapshotAdapter);
+            }
         }
 
         private void CreateNoPersistenceAdapters()
@@ -222,6 +240,7 @@ namespace BoCode.RedoDB.Builder
         {
             if (_commandAdapter is null) throw new RedoDBEngineException("_commandAdapter is null!");
             if (_snapshotAdapter is null) throw new RedoDBEngineException("_snapshotAdapter is null!");
+            if (_creator is null) throw new RedoDBEngineException("_creator is null!");
             I redoable;
 
             if (recovered != null)
@@ -257,10 +276,10 @@ namespace BoCode.RedoDB.Builder
         //deserialize and return T
         private async Task<T> RecoverRedoableAsync()
         {
+            if (_creator is null) throw new InvalidOperationException(nameof(_creator));
             if (_withNoPersistence) return _creator();
-
-            if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
-            if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
+            if (_commandAdapter is null) throw new InvalidOperationException(nameof(_commandAdapter));
+            if (_snapshotAdapter is null) throw new InvalidOperationException(nameof(_snapshotAdapter));
 
             T recovered = await _snapshotAdapter.DeserializeAsync() ?? _creator();
 
@@ -271,6 +290,10 @@ namespace BoCode.RedoDB.Builder
 
         private void RecoverFromLogs(T? recovered)
         {
+            if (recovered is null) throw new ArgumentNullException(nameof(recovered));
+            if (_commandAdapter is null) throw new InvalidOperationException("CommandAdapter is null while recovering from logs!");
+            if (_snapshotAdapter is null) throw new InvalidOperationException("SnapshotAdapter is null while recoving from logs!");
+
             HandleRedoableDependencies(recovered);
 
             _commandAdapter.LastSnapshotName = _snapshotAdapter.LastSnapshot == null ? string.Empty : new FileInfo(_snapshotAdapter.LastSnapshot).Name;
@@ -290,10 +313,11 @@ namespace BoCode.RedoDB.Builder
 
         private T RecoverRedoable()
         {
+            if (_creator is null) throw new InvalidOperationException("Creator is null while recovering data!");
             if (_withCommandlogOnly || _withNoPersistence) return _creator();
 
-            if (_commandAdapter is null) throw new ArgumentNullException(nameof(_commandAdapter));
-            if (_snapshotAdapter is null) throw new ArgumentNullException(nameof(_snapshotAdapter));
+            if (_commandAdapter is null) throw new InvalidOperationException(nameof(_commandAdapter));
+            if (_snapshotAdapter is null) throw new InvalidOperationException(nameof(_snapshotAdapter));
 
             T recovered = _snapshotAdapter.Deserialize() ?? _creator();
 

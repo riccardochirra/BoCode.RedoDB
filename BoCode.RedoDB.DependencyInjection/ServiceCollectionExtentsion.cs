@@ -1,6 +1,7 @@
 ﻿
 using BoCode.RedoDB.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace BoCode.RedoDB.DependencyInjection;
 

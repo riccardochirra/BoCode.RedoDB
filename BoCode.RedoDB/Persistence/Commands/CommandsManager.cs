@@ -1,4 +1,5 @@
 ﻿using BoCode.RedoDB.Compensation;
+using System.Collections.Generic;
 
 namespace BoCode.RedoDB.Persistence.Commands
 {
